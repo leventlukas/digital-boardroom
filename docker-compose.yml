@@ -1,0 +1,15 @@
+version: '2'
+
+services: 
+  app: 
+    build: .
+    volumes: 
+      - ./code:/usr/src/app/
+    ports:
+      - 8404:8404
+    #To Start Container in Bash Mode:
+    stdin_open: true
+    tty: true
+    container_name: digital-boardroom
+    command: >
+      bash -c "cd /usr/src/app/ && pip install -r requirements.txt && python"

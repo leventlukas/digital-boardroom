@@ -3,3 +3,5 @@ fpdf
 sqlalchemy
 Flask
 flask_mysqldb
+pandas
+pymysql
