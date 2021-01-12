@@ -1,8 +1,10 @@
 import requests
 import json
+from datetime import datetime, timedelta
+import time
 
 def call():
-    response = requests.post(url = 'http://0.0.0.0:8404/test')
+    response = requests.post(url = 'http://0.0.0.0:8404/simulation/test')
     return json.loads(response.text)
 
 def ping():
@@ -15,6 +17,17 @@ def bestellung():
 
 
 if __name__ == '__main__':
-    print(ping())
+    # print(ping())
 
-    print(bestellung())
+    # print(bestellung())
+
+    # time_1 = datetime.now()
+
+    # time.sleep(3)
+
+    # time_2 = datetime.now()
+    
+    # difference = time_2 - time_1
+    # print(difference.total_seconds())
+
+    print(call())

@@ -138,5 +138,82 @@ def ws_simuliere_bestellung():
 
     return df_bestellungen.to_json()
 
+@app.route('/simulation/produktionsdurchlauf', methods=['POST'])
+def ws_produktionsdurchlauf():
+    
+    engine, connection = setup_connection()
+    zeitpunkt = datetime.now()
+    
+    # Prüfen ob Auto in Status 4 fertigstellen --> Fertigstellen und Kaskadieren (wenn nicht don't do anything)
+    # Auto in Status 3 auf Status 
+
+    # Alle letzten Maschinen einer Produktionsstraße
+    # query_0 = 'SELECT * FROM ProduktionLine_Maschine WHERE Position = 4'
+    
+    # trans = connection.begin()
+    # res = connection.execute(query).fetchall()
+    
+    # for maschine in res:
+    #     maschinenID = maschine[0]
+    #     prodlineID = maschine[1]
+
+    maschinen = get_maschinenreihenfolge()
+
+    for strasse in maschinen:
+        prodline_id = strasse[0]
+        for maschinen_id, auto_id in strasse[1]:
+            time = datetime.now()
+            query_ausführung = f"SELECT * FROM Auto WHERE Auto_ID = {auto_id}"
+
+            ausfürhung = dict(
+                typ =
+                batterie =
+                innenraum =
+                farbe =
+                autoFahren =
+            )
+            wert =
+            
+            if not maschinenID%4: #wenn letzte station
+
+                query_komp_id_Innenraum = f"SELECT KompID, Preis FROM Komponente NATURAL JOIN Lager WHERE Typ = Innenraum AND Ausführung = {ausführung_innenraum} ORDER BY LagertSeit" #wenn in lager, dann verfügbar
+                preis_innenraum # TODO
+                query_komp_id_AutoFahren = f"SELECT KompID, Preis FROM Komponente NATURAL JOIN Lager WHERE Typ = AutoFahren AND Ausführung = {ausführung_autoFahren} ORDER BY LagertSeit"
+                preis_autoFahren # TODO
+            
+                query_komponentenzuordnung = f"INSERT INTO Auto_Produktion VALUES ({auto_id},{prodline_id},{komp_id_Autofahren}, {time}), ({auto_id},{prodline_id},{komp_id_Innenraum},{time})" #Zuordnung Komponenten
+
+            query_updateMaschine = f"UPDATE Maschine SET Auto_ID = NULL WHERE MaschinenID = {maschinen_id}"
+                
+            mehrkosten_stufe = preis_innenraum + preis_autoFahren
+            
+            query_updateAuto = f"UPDATE Auto SET Status = f{5}, Wert = {wert+mehrkosten_stufe}, ProdTimestmp = {time}"
+
+                
+
+    
+    # ausbuchen 
+
+
+
+    pass
+
+@app.route('/simulation/test', methods=['POST'])
+def get_maschinenreihenfolge():
+    engine, connection = setup_connection()
+    query_0 = "SELECT ProdLineID FROM ProduktionLine"
+    res = connection.execute(query_0).fetchall()
+    maschine_ls = []
+
+    for line in res:
+        line[0]
+        query_1 = f"SELECT MaschinenID, Auto_ID FROM ProduktionLine_Maschine NATURAL JOIN Maschine WHERE ProdLineID = {line[0]} ORDER BY Position DESC"
+        res = connection.execute(query_1).fetchall()
+        maschine_ls.append((line[0], res))
+    
+    print(maschine_ls)
+    return str(maschine_ls)
+
+
 if __name__ == '__main__':
     app.run(debug=True, host = '0.0.0.0', port = '8404')
