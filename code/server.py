@@ -55,6 +55,62 @@ def ws_simuliere_einlagerung():
     # 3. Setze Status auf Prozent von Kapazität
     pass
 
+@app.route('/simulation/lagereingang', methods=['POST'])
+def sumuliere_algereingang():
+
+    komponenten_count = 10
+
+    typ_base_ls = ['Typ', 'Batterie', 'Innenraum', 'Farbe', 'AutoFahren']
+    typ_aus_base_ls = ['Model X', 'Model S', 'Model 3']
+    bat_aus_base_ls = ['Standard Plus', 'Maximale Reichweite', 'Performance', 'Plaid']
+    inn_aus_base_ls = ['schwarz', 'weiss']
+    farbe_aus_base_ls = ['Pearl White Multi-Coat', 'Solid Black', 'Midnight Silver Metallic', 'Deep Blue Metallic', 'Red Multi-Coat']
+    autofahr_aus_base_ls = ['yes', 'no']
+
+    typ_ls, ausf_ls, preis_ls, eingang_ls, lager_ls = ([] for i in range(5))
+
+    for komponente in range(komponenten_count):
+        komp_typ = random.choice(typ_base_ls)
+        typ_ls.append(komp_typ)
+        
+        if komp_typ == 'Typ':
+            ausf_ls.append(random.choice(typ_aus_base_ls))
+            preis_ls.append(200)
+        
+        elif komp_typ == 'Batterie':
+            ausf_ls.append(random.choice(bat_aus_base_ls))
+            preis_ls.append(300)
+
+        elif komp_typ == 'Innenraum':
+            ausf_ls.append(random.choice(inn_aus_base_ls))
+            preis_ls.append(150)
+
+        elif komp_typ == 'Farbe':
+            ausf_ls.append(random.choice(farbe_aus_base_ls))
+            preis_ls.append(50)
+
+        elif komp_typ == 'AutoFahren':
+            ausf_ls.append(random.choice(autofahr_aus_base_ls))
+            preis_ls.append(10)
+        
+        eingang_ls.append(datetime.now())
+        lager_ls.append(1)
+    typ_ls, ausf_ls, preis_ls, eingang_ls, lager_ls
+    df_komp = pd.DataFrame({
+        'Typ': typ_ls,
+        'Ausführung': ausf_ls,
+        'Preis': preis_ls,
+        'Eingang': eingang_ls,
+        'LagerID':lager_ls
+    })
+
+    engine, connection = setup_connection()
+    trans = connection.begin()
+
+    df_komp.to_sql("Komponente", con=connection, if_exists="append", index=False)
+    trans.commit()
+
+    pass
 
 @app.route('/simulation/bestellung', methods=['POST'])
 def ws_simuliere_bestellung():
@@ -160,35 +216,47 @@ def ws_produktionsdurchlauf():
     maschinen = get_maschinenreihenfolge()
 
     for strasse in maschinen:
-        prodline_id = strasse[0]
-        for maschinen_id, auto_id in strasse[1]:
+        print(strasse)
+        for  i in range(len(strasse)):
+            maschinen_id, auto_id, bearbeitungszeit = strasse[i]
+            m_next_id, a_next_id, bzeit_next = strasse[i+1]
+
+            engine, connection = setup_connection()
+            trans = connection.begin()
+
             time = datetime.now()
-            query_ausführung = f"SELECT * FROM Auto WHERE Auto_ID = {auto_id}"
-
-            ausfürhung = dict(
-                typ =
-                batterie =
-                innenraum =
-                farbe =
-                autoFahren =
-            )
-            wert =
+            query_auto = f"SELECT * FROM Auto WHERE Auto_ID = {auto_id}"
             
-            if not maschinenID%4: #wenn letzte station
+            res_auto = connection.execute(query_auto).fetchall()
 
-                query_komp_id_Innenraum = f"SELECT KompID, Preis FROM Komponente NATURAL JOIN Lager WHERE Typ = Innenraum AND Ausführung = {ausführung_innenraum} ORDER BY LagertSeit" #wenn in lager, dann verfügbar
-                preis_innenraum # TODO
-                query_komp_id_AutoFahren = f"SELECT KompID, Preis FROM Komponente NATURAL JOIN Lager WHERE Typ = AutoFahren AND Ausführung = {ausführung_autoFahren} ORDER BY LagertSeit"
-                preis_autoFahren # TODO
-            
-                query_komponentenzuordnung = f"INSERT INTO Auto_Produktion VALUES ({auto_id},{prodline_id},{komp_id_Autofahren}, {time}), ({auto_id},{prodline_id},{komp_id_Innenraum},{time})" #Zuordnung Komponenten
+            zeit_in_maschine = time - res_auto[0][8]
 
-            query_updateMaschine = f"UPDATE Maschine SET Auto_ID = NULL WHERE MaschinenID = {maschinen_id}"
+            if zeit_in_maschine.difference.total_seconds() >= bearbeitungszeit:
+
+                ausfürhung = dict(
+                    typ = res_auto[0][1],
+                    batterie = res_auto[0][2],
+                    innenraum = res_auto[0][3],
+                    farbe = res_auto[0][4],
+                    autoFahren = res_auto[0][5],
+                )
+                wert = res_ausführung[0][7]
                 
-            mehrkosten_stufe = preis_innenraum + preis_autoFahren
-            
-            query_updateAuto = f"UPDATE Auto SET Status = f{5}, Wert = {wert+mehrkosten_stufe}, ProdTimestmp = {time}"
+                if not maschinenID%4: #wenn letzte station
 
+                    query_komp_id_Innenraum = f"SELECT KompID, Preis FROM Komponente WHERE Typ = Innenraum AND AUTO_ID = {auto_id}" #wenn in lager, dann verfügbar
+                    preis_innenraum # TODO
+                    query_komp_id_AutoFahren = f"SELECT KompID, Preis FROM Komponente WHERE Typ = AutoFahren AND AUTO_ID = {auto_id}"
+                    preis_autoFahren # TODO
+                
+                    query_komponentenzuordnung = f"UPDATE Komponente SET Einbau = {time}, LagerID = NULL" #Einbau und aus Lager entfernen
+
+                query_updateMaschine = f"UPDATE Maschine SET Auto_ID = NULL WHERE MaschinenID = {maschinen_id}"
+                    
+                mehrkosten_stufe = preis_innenraum + preis_autoFahren
+                
+                query_updateAuto = f"UPDATE Auto SET Status = 5, Wert = {wert+mehrkosten_stufe}, ProdTimestmp = {time}"
+        
                 
 
     
@@ -201,18 +269,14 @@ def ws_produktionsdurchlauf():
 @app.route('/simulation/test', methods=['POST'])
 def get_maschinenreihenfolge():
     engine, connection = setup_connection()
-    query_0 = "SELECT ProdLineID FROM ProduktionLine"
-    res = connection.execute(query_0).fetchall()
     maschine_ls = []
 
-    for line in res:
-        line[0]
-        query_1 = f"SELECT MaschinenID, Auto_ID FROM ProduktionLine_Maschine NATURAL JOIN Maschine WHERE ProdLineID = {line[0]} ORDER BY Position DESC"
-        res = connection.execute(query_1).fetchall()
-        maschine_ls.append((line[0], res))
+    query_1 = f"SELECT MaschinenID, Auto_ID, Bearbeitungszeit FROM  Maschine ORDER BY Position DESC"
+    res = connection.execute(query_1).fetchall()
+    maschine_ls.append(res)
     
     print(maschine_ls)
-    return str(maschine_ls)
+    return maschine_ls
 
 
 if __name__ == '__main__':

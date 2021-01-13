@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import time
 
 def call():
-    response = requests.post(url = 'http://0.0.0.0:8404/simulation/test')
+    response = requests.post(url = 'http://0.0.0.0:8404/simulation/produktionsdurchlauf')
     return json.loads(response.text)
 
 def ping():
