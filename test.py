@@ -5,6 +5,10 @@ import time
 
 def call():
     response = requests.post(url = 'http://0.0.0.0:8404/simulation/produktionsdurchlauf')
+    return response.text
+
+def lagereingang():
+    response = requests.post(url = 'http://0.0.0.0:8404/simulation/lagereingang')
     return json.loads(response.text)
 
 def ping():
@@ -13,7 +17,11 @@ def ping():
 
 def bestellung():
     response = requests.post('http://0.0.0.0:8404/simulation/bestellung')
-    return response
+    return 
+    
+def test():
+    response = requests.post('http://0.0.0.0:8404/test/createandreturncar')
+    return 
 
 
 if __name__ == '__main__':
@@ -21,13 +29,15 @@ if __name__ == '__main__':
 
     # print(bestellung())
 
-    # time_1 = datetime.now()
+    # time_1 = datetime.utcnow()
 
     # time.sleep(3)
 
-    # time_2 = datetime.now()
+    # time_2 = datetime.utcnow()
     
     # difference = time_2 - time_1
     # print(difference.total_seconds())
 
+    #lagereingang()
+    #print(test())
     print(call())

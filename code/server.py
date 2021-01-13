@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 import sqlalchemy
-from sqlalchemy import sql
+from sqlalchemy import sql, text
 import json
 import requests
 import os
@@ -50,7 +50,7 @@ def ws_test():
 @app.route('/simulation/lagereingang', methods=['POST'])
 def sumuliere_lagereingang():
 
-    komponenten_count = 10
+    komponenten_count = 100
 
     typ_base_ls = ['Typ', 'Batterie', 'Innenraum', 'Farbe', 'AutoFahren']
     typ_aus_base_ls = ['Model X', 'Model S', 'Model 3']
@@ -90,7 +90,7 @@ def sumuliere_lagereingang():
     typ_ls, ausf_ls, preis_ls, eingang_ls, lager_ls
     df_komp = pd.DataFrame({
         'Typ': typ_ls,
-        'Ausführung': ausf_ls,
+        'Ausfuehrung': ausf_ls,
         'Preis': preis_ls,
         'Eingang': eingang_ls,
         'LagerID':lager_ls
@@ -190,120 +190,139 @@ def simuliere_bestellung():
 def produktionsdurchlauf():
     
     maschinen = get_maschinenreihenfolge()
-    time = datetime.now()
-    for strasse in maschinen:
-        print(strasse)
-        for  i in range(len(strasse)):
-            maschinen_id, auto_id, bearbeitungszeit = strasse[i]
-            m_next_id, a_next_id, bzeit_next = strasse[i+1]
+    time = datetime.utcnow()
+    timestr = str(time)
+    time_db_format = timestr[:-6] + '0'
 
-            engine, connection = setup_connection()
-            trans = connection.begin()
+    engine, connection = setup_connection()
+    trans = connection.begin()
 
-            if auto_id: #wenn es eine auto_id gibt arbeitet Maschine noch --> evtl ausbuchen
+    try:
 
-                query_auto = f"SELECT * FROM Auto WHERE Auto_ID = {auto_id}"
-                
-                res_auto = connection.execute(query_auto).fetchall()
+        for strasse in maschinen:
+            print(strasse)
+            for  i in range(len(strasse)):
+                print(strasse[i])
+                maschinen_id, auto_id, bearbeitungszeit = strasse[i]
 
-                zeit_in_maschine = time - res_auto[0][8]
-
-                if zeit_in_maschine.difference.total_seconds() >= bearbeitungszeit: # prüfen ob Maschine fertig ist
-
-                    ausfürhung = dict(
-                        typ = res_auto[0][1],
-                        batterie = res_auto[0][2],
-                        innenraum = res_auto[0][3],
-                        farbe = res_auto[0][4],
-                        autoFahren = res_auto[0][5],
-                    )
-                    wert = res_ausführung[0][7]
-
-                    komp_id = None
-                    mehrkosten_stufe = None
+                if auto_id: #wenn es eine auto_id gibt arbeitet Maschine noch --> evtl ausbuchen
                     
-                    if i == 4: #wenn letzte station
+                    query_auto = f"SELECT * FROM Auto WHERE Auto_ID = {auto_id}"
+                    res_auto = connection.execute(query_auto).fetchall()
+                    print(res_auto)
+                    zeit_in_maschine = time - res_auto[0][8]
 
-                        query_komp_Innenraum = f"SELECT KompID, Preis FROM Komponente WHERE Typ = Innenraum AND AUTO_ID = {auto_id}" #wenn in lager, dann verfügbar
-                        preis_innenraum # TODO
-                        kompid_innenraum
-                        query_komp_AutoFahren = f"SELECT KompID, Preis FROM Komponente WHERE Typ = AutoFahren AND AUTO_ID = {auto_id}"
-                        preis_autoFahren # TODO
-                        kompid_autoFahren
-                        komp_id = kompid_autoFahren
-                        mehrkosten_stufe = preis_innenraum + preis_autoFahren
-                        query_komponentenzuordnung = f"UPDATE Komponente SET Einbau = {time}, LagerID = NULL WHERE KompID = {kompid_innenraum}" #Einbau und aus Lager entfernen innenraum
-                        query_updateAuto = f"UPDATE Auto SET Status = 5, Wert = {wert+mehrkosten_stufe}, ProdTimestmp = {time}" #set status to lagernd only for maschine 4
+                    if zeit_in_maschine.difference.total_seconds() >= bearbeitungszeit: # pruefen ob Maschine fertig ist
 
-                    elif i == 3: #wenn station batterieeinbau
-                        query_komp_id_Batterie = f"SELECT KompID, Preis FROM Komponente WHERE Typ = Batterie AND AUTO_ID = {auto_id}"
-                        komp_id
-                        mehrkosten_stufe
-                        query_updateAuto = f"UPDATE Auto SET Wert = {wert+mehrkosten_stufe}"
+                        ausfuerhung = dict(
+                            typ = res_auto[0][1],
+                            batterie = res_auto[0][2],
+                            innenraum = res_auto[0][3],
+                            farbe = res_auto[0][4],
+                            autoFahren = res_auto[0][5],
+                        )
+                        wert = res_ausfuehrung[0][7]
+
+                        komp_id = None
+                        mehrkosten_stufe = None
                         
-                    elif i == 2:
-                        query_komp_id_Farbe = f"SELECT KompID, Preis FROM Komponente WHERE Typ = Farbe AND AUTO_ID = {auto_id}"
-                        komp_id #TODO
-                        mehrkosten_stufe #TODO
-                        query_updateAuto = f"UPDATE Auto SET Wert = {wert+mehrkosten_stufe}"
+                        if i == 4: #wenn letzte station
 
-                    elif i == 1:
-                        query_komp_id_Farbe = f"SELECT KompID, Preis FROM Komponente WHERE Typ = Farbe AND AUTO_ID = {auto_id}"
-                        komp_id #TODO
-                        mehrkosten_stufe #TODO
-                        query_updateAuto = f"UPDATE Auto SET Wert = {wert+mehrkosten_stufe}"
+                            query_komp_Innenraum = f"SELECT KompID, Preis FROM Komponente WHERE Typ = Innenraum AND AUTO_ID = {auto_id}" #wenn in lager, dann verfuegbar
+                            preis_innenraum # TODO
+                            kompid_innenraum
+                            query_komp_AutoFahren = f"SELECT KompID, Preis FROM Komponente WHERE Typ = AutoFahren AND AUTO_ID = {auto_id}"
+                            preis_autoFahren # TODO
+                            kompid_autoFahren
+                            komp_id = kompid_autoFahren
+                            mehrkosten_stufe = preis_innenraum + preis_autoFahren
+                            query_komponentenzuordnung = f"UPDATE Komponente SET Einbau = {time}, LagerID = NULL WHERE KompID = {kompid_innenraum}" #Einbau und aus Lager entfernen innenraum
+                            query_updateAuto = f"UPDATE Auto SET Status = 5, Wert = {wert+mehrkosten_stufe}, ProdTimestmp = {time}" #set status to lagernd only for maschine 4
+
+                        elif i == 3: #wenn station batterieeinbau
+                            query_komp_id_Batterie = f"SELECT KompID, Preis FROM Komponente WHERE Typ = Batterie AND AUTO_ID = {auto_id}"
+                            komp_id
+                            mehrkosten_stufe
+                            query_updateAuto = f"UPDATE Auto SET Wert = {wert+mehrkosten_stufe}"
+                            
+                        elif i == 2:
+                            query_komp_id_Farbe = f"SELECT KompID, Preis FROM Komponente WHERE Typ = Farbe AND AUTO_ID = {auto_id}"
+                            komp_id #TODO
+                            mehrkosten_stufe #TODO
+                            query_updateAuto = f"UPDATE Auto SET Wert = {wert+mehrkosten_stufe}"
+
+                        elif i == 1:
+                            query_komp_id_Farbe = f"SELECT KompID, Preis FROM Komponente WHERE Typ = Farbe AND AUTO_ID = {auto_id}"
+                            komp_id #TODO
+                            mehrkosten_stufe #TODO
+                            query_updateAuto = f"UPDATE Auto SET Wert = {wert+mehrkosten_stufe}"
+                        
+                        query_komponentenzuordnung = f"UPDATE Komponente SET Einbau = {time}, LagerID = NULL WHERE KompID = {komp_id}"
+
+                        query_updateMaschine = f"UPDATE Maschine SET Auto_ID = NULL WHERE MaschinenID = {maschinen_id}"
+
+                else: #wenn keine auto_id --> Maschine wartet
+                    produktionsstrasse_id =  maschinen.index(strasse)# TODO
+                    auto_id_pipe = None
                     
-                    query_komponentenzuordnung = f"UPDATE Komponente SET Einbau = {time}, LagerID = NULL WHERE KompID = {komp_id}"
+                    if i == 3: # wenn erste maschine wartet id 3 --> position 4
+                        query_next_auto = f"SELECT Auto_ID FROM Auto WHERE Status = 0 ORDER BY ProdTimestmp LIMIT 1"
+                        auto_id_pipe #TODO
+                        query_updateAuto = f"UPDATE Auto SET Status = {i+1}, ProdTimestmp = {time}, Produktionsstrasse  = {produktionsstrasse_id}, BedinnProdTime = {time} WHERE Auto_ID = {auto_id_pipe}"
 
-                    query_updateMaschine = f"UPDATE Maschine SET Auto_ID = NULL WHERE MaschinenID = {maschinen_id}"
+                    else: 
+                        print(i)
+                        m_next_id, a_next_id, bzeit_next = strasse[i+1]
+                        if not a_next_id and i != 0: #pruefen ob Maschine in der position vorher schon fertig ist
+                            query_auto = f"SELECT * FROM Auto WHERE Produktionsstrasse = {produktionsstrasse_id} AND Status = {i}" #TODO pruefen ob i = maschinen_id -1 fuer prodstrasse 1
+                            res_auto = connection.execute(query_auto).fetchall()
+                            print(res_auto)
+                            auto_id_pipe #TODO
+                            query_updateAuto = f"UPDATE Auto SET Status = {i+1}, ProdTimestmp = {time} WHERE Auto_ID = {auto_id_pipe}"
 
-            else: #wenn keine auto_id --> Maschine wartet
-                produktionsstrasse_id =  maschinen.index(strasse)# TODO
-                auto_id_pipe 
-                if not a_next_id and i != 0: #prüfen ob Maschine in der position vorher schon fertig ist
-                    query_auto = f"SELECT * FROM Auto WHERE Produktionsstrasse = {produktionsstrasse_id} AND Status = {i}" #TODO prüfen ob i = maschinen_id -1 für prodstrasse 1
-                    auto_id_pipe #TODO
-                    query_updateAuto = f"UPDATE Auto SET Status = {i+1}, ProdTimestmp = {time} WHERE Auto_ID = {auto_id_pipe}"
-
-                elif i == 0: # wenn erste maschine wartet
-                    query_next_auto = f"SELECT Auto_ID FROM Auto WHERE Status = 0 ORDER BY ProdTimestmp LIMIT 1"
-                    auto_id_pipe #TODO
-                    query_updateAuto = f"UPDATE Auto SET Status = {i+1}, ProdTimestmp = {time}, Produktionsstrasse  = {produktionsstrasse_id}, BedinnProdTime = {time} WHERE Auto_ID = {auto_id_pipe}"
-
-                query_updateMaschine = f"UPDATE Maschine SET Auto_ID = {auto_id} WHERE MaschinenID = {maschinen_id}"
-        
-        #decide on next car and assign komponents
-        query_bestellungen = f"SELECT * FROM Bestellung WHERE Auto_ID IS NULL ORDER BY Eingang"
-        best_id_ls = [res[b][0] for b in res]
-        best_typ_ls = [res[b][1] for b in res]
-        best_bat_ls = [res[b][2] for b in res]
-        best_inn_ls = [res[b][3] for b in res]
-        best_farbe_ls = [res[b][4] for b in res]
-        best_autoFahren_ls = [res[b][6] for b in res]
-        
-        komp_ls = []
-        bestellung_id 
-        for i in range(len(best_id_ls)):
-            #check availability of needed components
-            query_typ_check = f"SELECT KompID FROM Komponente WHERE Auto_ID IS NULL AND Typ = Typ AND Ausführung = {best_typ_ls[i]} ORDER BY Eingang"
-            if res:
-                komp_ls.append()
-                query_typ_check = f"SELECT KompID FROM Komponente WHERE Auto_ID IS NULL AND Typ = Batterie AND Ausführung = {best_bar_ls[i]} ORDER BY Eingang"
-                if res:
-                    komp_ls.append()
-                    query_typ_check = f"SELECT KompID FROM Komponente WHERE Auto_ID IS NULL AND Typ = Batterie AND Ausführung = {best_bar_ls[i]} ORDER BY Eingang"
-                    if res:
-                        komp_ls.append()
-                        query_typ_check = f"SELECT KompID FROM Komponente WHERE Auto_ID IS NULL AND Typ = Innenraum AND Ausführung = {best_inn_ls[i]} ORDER BY Eingang"
-                        if res:
-                            komp_ls.append()
-                            query_typ_check = f"SELECT KompID FROM Komponente WHERE Auto_ID IS NULL AND Typ = Farbe AND Ausführung = {best_farbe_ls[i]} ORDER BY Eingang"
-                            if res:
-                                komp_ls.append()
-                                query_typ_check = f"SELECT KompID FROM Komponente WHERE Auto_ID IS NULL AND Typ = AutoFahren AND Ausführung = {best_autoFahren_ls[i]} ORDER BY Eingang"
-                                bestellung_id = best_id_ls[i]
-                                index = i
-                                break
+                    query_updateMaschine = f"UPDATE Maschine SET Auto_ID = {auto_id} WHERE MaschinenID = {maschinen_id}"
+            
+            # TESTED AB HIER -----------------------------
+            #decide on next car and assign komponents
+            query_bestellung = f"SELECT * FROM Bestellung WHERE Auto_ID IS NULL ORDER BY Eingang"
+            res_bestellung = connection.execute(query_bestellung).fetchall()
+            best_id_ls = [b[0] for b in res_bestellung]
+            best_typ_ls = [b[1] for b in res_bestellung]
+            best_bat_ls = [b[2] for b in res_bestellung]
+            best_inn_ls = [b[3] for b in res_bestellung]
+            best_farbe_ls = [b[4] for b in res_bestellung]
+            best_autoFahren_ls = [b[6] for b in res_bestellung]
+            
+            komp_ls = []
+            bestellung_id = None 
+            for i in range(len(best_id_ls)):
+                #check availability of needed components
+                query_typ_check = f"SELECT KompID FROM Komponente WHERE Auto_ID IS NULL AND Typ = 'Typ' AND Ausfuehrung = '{best_typ_ls[i]}' ORDER BY Eingang"
+                typ_id = connection.execute(query_typ_check).fetchall()[0][0]
+                if typ_id:
+                    komp_ls.append(typ_id)
+                    query_batt_check = f"SELECT KompID FROM Komponente WHERE Auto_ID IS NULL AND Typ = 'Batterie' AND Ausfuehrung = '{best_bat_ls[i]}' ORDER BY Eingang"
+                    batt_id = connection.execute(query_batt_check).fetchall()[0][0]
+                    if batt_id:
+                        komp_ls.append(batt_id)
+                        query_inn_check = f"SELECT KompID FROM Komponente WHERE Auto_ID IS NULL AND Typ = 'Innenraum' AND Ausfuehrung = '{best_inn_ls[i]}' ORDER BY Eingang"
+                        inn_id = connection.execute(query_inn_check).fetchall()[0][0]
+                        if inn_id:
+                            komp_ls.append(inn_id)
+                            query_farbe_check = f"SELECT KompID FROM Komponente WHERE Auto_ID IS NULL AND Typ = 'Farbe' AND Ausfuehrung = '{best_farbe_ls[i]}' ORDER BY Eingang"
+                            farbe_id = connection.execute(query_farbe_check).fetchall()[0][0]
+                            if farbe_id :
+                                komp_ls.append(farbe_id)
+                                query_autoFahren_check = f"SELECT KompID FROM Komponente WHERE Auto_ID IS NULL AND Typ = 'AutoFahren' AND Ausfuehrung = '{best_autoFahren_ls[i]}' ORDER BY Eingang"
+                                autoFahren_id = connection.execute(query_autoFahren_check).fetchall()[0][0]
+                                if autoFahren_id:
+                                    komp_ls.append(autoFahren_id)
+                                    bestellung_id = best_id_ls[i]
+                                    index = i
+                                    break
+                                else:
+                                    komp_ls = []
+                                    continue
                             else:
                                 komp_ls = []
                                 continue
@@ -312,20 +331,56 @@ def produktionsdurchlauf():
                             continue
                     else:
                         komp_ls = []
-                        continue
+                        continue    
                 else:
                     komp_ls = []
-                    continue    
-            else:
-                komp_ls = []
-                continue
-            
-        if komp_ls:
-            query_create_car = f"INSERT INTO Auto (Typ, Batterie, Innenraum, Farbe, AutoFahren, Status, Wert, ProdTimestmp) VALUES ({best_typ_ls[index]}, {best_bar_ls[i]}, {best_bar_ls[i]} {best_farbe_ls[i]}, {best_autoFahren_ls[i]}, 0, 0, {time})"
-            auto_id_new = f"SELECT Auto_ID FROM Auto WHERE ProdTimestmp = {time}"
-            query_assign_komponents = f"UPDATE Komponente SET AUTO_ID ={auto_id_new} WHERE "
+                    continue
+                
+            if komp_ls:                
+                query_create_car = f"INSERT INTO Auto (Typ, Batterie, Innenraum, Farbe, AutoFahren, Status, Wert, ProdTimestmp) VALUES ('{best_typ_ls[index]}', '{best_bat_ls[index]}', '{best_inn_ls[index]}', '{best_farbe_ls[index]}', '{best_autoFahren_ls[index]}', 0, 0, '{time_db_format}')"
 
-    pass
+                connection.execute(query_create_car)
+
+                auto_id_new_query = f"SELECT Auto_ID FROM Auto WHERE ProdTimestmp = '{time_db_format}'"
+                auto_id_new_query = text(auto_id_new_query)
+                auto_id_new = connection.execute(auto_id_new_query).fetchall()[0][0]
+                
+                print(f"auto_id: {auto_id_new}")
+                query_assign_komponents = f"UPDATE Komponente SET AUTO_ID = {auto_id_new} WHERE KompID = {komp_ls[0]} OR KompID = {komp_ls[1]} OR KompID = {komp_ls[2]} OR KompID = {komp_ls[3]} OR KompID = {komp_ls[4]}"
+                connection.execute(query_assign_komponents)
+            
+    except:
+        raise
+
+    finally:
+        trans.rollback()
+
+    return "success"
+
+@app.route('/test/createandreturncar', methods=['POST'])
+def createandreturncar():
+    engine, connection = setup_connection()
+    trans = connection.begin()
+
+    time = datetime.utcnow()
+
+    timestr = str(time)
+    time_db_format = timestr[:-6] + '0'
+    print(timestr)
+    print(time_db_format)
+    
+    query_create_car = f"INSERT INTO Auto (Typ, Batterie, Innenraum, Farbe, AutoFahren, Status, Wert, ProdTimestmp) VALUES ('Model X', 'Maximale Reichweite', 'weiss', 'Red Multi-Coat', 'yes', 0, 0, '{time_db_format}')"
+    query_create_car = text(query_create_car)
+    connection.execute(query_create_car)
+
+    auto_id_new_query = f"SELECT Auto_ID FROM Auto WHERE ProdTimestmp = '{time_db_format}'"
+    auto_id_new_query = text(auto_id_new_query)
+    print(auto_id_new_query)
+    auto_id_new = connection.execute(auto_id_new_query).fetchall()
+    print(auto_id_new)
+    
+    trans.rollback()
+    return "success"
 
 @app.route('/simulation/test', methods=['POST'])
 def get_maschinenreihenfolge():
