@@ -48,7 +48,7 @@ def ws_test():
 # Simulation
 
 @app.route('/simulation/lagereingang', methods=['POST'])
-def sumuliere_algereingang():
+def sumuliere_lagereingang():
 
     komponenten_count = 10
 
