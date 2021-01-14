@@ -23,7 +23,10 @@ def test():
     response = requests.post('http://0.0.0.0:8404/test/createandreturncar')
     return 
 
-
+def loop(sek, loops):
+    for i in range(loops):
+        print(call())
+        time.sleep(sek)
 if __name__ == '__main__':
     # print(ping())
 
@@ -40,4 +43,7 @@ if __name__ == '__main__':
 
     #lagereingang()
     #print(test())
-    print(call())
+
+    loop(1, 2)
+   
+    
