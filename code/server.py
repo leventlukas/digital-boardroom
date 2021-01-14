@@ -196,6 +196,8 @@ def produktionsdurchlauf():
 
     engine, connection = setup_connection()
     trans = connection.begin()
+    
+    m_id_ls, tstmp_ls, nutzung_ls, dauer_ls, auslastung_ls, status_ls, prod_ls = [], [], [], [], [], [], []
 
     try:
 
@@ -203,9 +205,10 @@ def produktionsdurchlauf():
             print(strasse)
             for  i in range(len(strasse)):
                 print(i, strasse[i])
-                maschinen_id, auto_id, bearbeitungszeit, position = strasse[i]
+                maschinen_id, auto_id, bearbeitungszeit, position, status, prod = strasse[i]
 
                 if auto_id: #wenn es eine auto_id gibt arbeitet Maschine noch --> evtl ausbuchen
+                    nutzung = True
                     
                     query_auto = f"SELECT * FROM Auto WHERE Auto_ID = {auto_id}"
                     res_auto = connection.execute(query_auto).fetchall()
@@ -240,39 +243,43 @@ def produktionsdurchlauf():
                                 komp_id = kompid_autoFahren
                                 mehrkosten_stufe = preis_innenraum + preis_autoFahren
                                 query_komponentenzuordnung = f"UPDATE Komponente SET Einbau = '{time_db_format}', LagerID = NULL WHERE KompID = '{kompid_innenraum}'" #Einbau und aus Lager entfernen innenraum
-                                query_updateAuto = f"UPDATE Auto SET Status = 5, Wert = '{wert+mehrkosten_stufe}', ProdTimestmp = '{time_db_format}'" #set status to lagernd only for maschine 4
+                                connection.execute(query_komponentenzuordnung)
+                                query_updateAuto = f"UPDATE Auto SET Status = 5, Wert = '{wert+mehrkosten_stufe}', ProdTimestmp = '{time_db_format}' WHERE AUTO_ID = '{auto_id}'" #set status to lagernd only for maschine 4
 
                         elif i == 1: #wenn station batterieeinbau
-                            query_komp_id_Batterie = f"SELECT KompID, Preis FROM Komponente WHERE Typ = 'Batterie' AND AUTO_ID = {auto_id}"
+                            query_komp_id_Batterie = f"SELECT KompID, Preis FROM Komponente WHERE Typ = 'Batterie' AND AUTO_ID = '{auto_id}'"
                             res_bat = connection.execute(query_komp_id_Batterie).fetchall()
                             komp_id, mehrkosten_stufe = res_bat[0]
                             
                             query_updateAuto = f"UPDATE Auto SET Wert = {wert+mehrkosten_stufe}"
                             
                         elif i == 2:
-                            query_komp_id_Farbe = f"SELECT KompID, Preis FROM Komponente WHERE Typ = 'Farbe' AND AUTO_ID = {auto_id}"
+                            query_komp_id_Farbe = f"SELECT KompID, Preis FROM Komponente WHERE Typ = 'Farbe' AND AUTO_ID = '{auto_id}'"
                             res_farbe = connection.execute(query_komp_id_Farbe).fetchall()
                             komp_id, mehrkosten_stufe = res_farbe[0]
 
                             query_updateAuto = f"UPDATE Auto SET Wert = {wert+mehrkosten_stufe}"
 
                         elif i == 3:
-                            query_komp_id_typ = f"SELECT KompID, Preis FROM Komponente WHERE Typ = 'Typ' AND AUTO_ID = {auto_id}"
+                            query_komp_id_typ = f"SELECT KompID, Preis FROM Komponente WHERE Typ = 'Typ' AND AUTO_ID = '{auto_id}'"
                             res_typ = connection.execute(query_komp_id_typ).fetchall()
                             komp_id, mehrkosten_stufe = res_typ[0]
 
                             query_updateAuto = f"UPDATE Auto SET Wert = {wert+mehrkosten_stufe}"
                         
                         query_komponentenzuordnung = f"UPDATE Komponente SET Einbau = '{time_db_format}', LagerID = NULL WHERE KompID = '{komp_id}'"
-                        res_typ = connection.execute(query_komponentenzuordnung)
+                        connection.execute(query_komponentenzuordnung)
 
 
                         query_updateMaschine = f"UPDATE Maschine SET Auto_ID = NULL WHERE MaschinenID = '{maschinen_id}'"
-                        res_typ = connection.execute(query_updateMaschine)
+                        connection.execute(query_updateMaschine)
+
+                        connection.execute(query_updateAuto)
 
                 else: #wenn keine auto_id --> Maschine wartet
                     produktionsstrasse_id =  maschinen.index(strasse)+1 
                     auto_id_pipe = None
+                    nutzung = False
                     
                     if i == 3: # wenn erste maschine wartet id 3 --> position 4
                         query_next_auto = f"SELECT Auto_ID FROM Auto WHERE Status = 0 ORDER BY ProdTimestmp LIMIT 1"
@@ -285,7 +292,7 @@ def produktionsdurchlauf():
                             query_updateMaschine = f"UPDATE Maschine SET Auto_ID = '{auto_id_pipe}' WHERE MaschinenID = '{maschinen_id}'"
                             connection.execute(query_updateMaschine)
                     else: 
-                        _, a_next_id, _, _ = strasse[i+1]
+                        _, a_next_id, _, _, _, _ = strasse[i+1]
                         if not a_next_id: #pruefen ob Maschine in der position vorher schon fertig ist
                             print(maschinen_id, position)
                             query_auto = f"SELECT * FROM Auto WHERE Produktionsstrasse = '{produktionsstrasse_id}' AND Status = '{position-1}'" #TODO pruefen ob i = maschinen_id -1 fuer prodstrasse 1
@@ -295,8 +302,41 @@ def produktionsdurchlauf():
                                 query_updateAuto = f"UPDATE Auto SET Status = '{position}', ProdTimestmp = '{time_db_format}' WHERE Auto_ID = '{auto_id_pipe}'"
                                 connection.execute(query_updateAuto)
                                 query_updateMaschine = f"UPDATE Maschine SET Auto_ID = '{auto_id_pipe}' WHERE MaschinenID = '{maschinen_id}'"
-                                connection.execute(query_updateMaschine)
-            
+                                connection.execute(query_updateMaschine)        
+
+                query_letzte_nutzung = f"SELECT * FROM Auslastung_Maschine WHERE MaschinenID = '{maschinen_id}' ORDER BY Timestmp DESC LIMIT 10"
+                res_letzte_nutzung = connection.execute(query_letzte_nutzung).fetchall()
+                            
+                if res_letzte_nutzung: #only not ramp up
+                    print(res_letzte_nutzung)
+                    print(res_letzte_nutzung[0])
+                    print(res_letzte_nutzung[0][2])
+                    dauer = time - res_letzte_nutzung[0][2]
+                    dauer = dauer.total_seconds()
+                    laufzeit = dauer
+                    for t in res_letzte_nutzung:
+                        laufzeit = laufzeit + t[3]
+                    nutzungszeit = 0
+                    if nutzung:
+                        nutzungszeit = dauer
+                    for t in res_letzte_nutzung:
+                        if t[1]:
+                            nutzungszeit = nutzungszeit + t[3]
+                    
+                    auslastung = nutzungszeit/laufzeit
+
+                else:
+                    dauer, laufzeit, auslastung = 0, 0 ,0
+                    nutzung = False
+                    
+                status_ls.append(status)
+                prod_ls.append(prod)
+                m_id_ls.append(maschinen_id)
+                tstmp_ls.append(time_db_format)
+                nutzung_ls.append(nutzung)
+                dauer_ls.append(dauer)
+                auslastung_ls.append(auslastung)     
+
             # TESTED AB HIER -----------------------------
             #decide on next car and assign komponents
             query_bestellung = f"SELECT * FROM Bestellung WHERE Auto_ID IS NULL ORDER BY Eingang"
@@ -351,7 +391,8 @@ def produktionsdurchlauf():
                     komp_ls = []
                     continue
                 
-            if komp_ls:                
+            if komp_ls:
+                print("-------------Plaung Neues Auto")               
                 query_create_car = f"INSERT INTO Auto (Typ, Batterie, Innenraum, Farbe, AutoFahren, Status, Wert, ProdTimestmp) VALUES ('{best_typ_ls[index]}', '{best_bat_ls[index]}', '{best_inn_ls[index]}', '{best_farbe_ls[index]}', '{best_autoFahren_ls[index]}', 0, 0, '{time_db_format}')"
 
                 connection.execute(query_create_car)
@@ -366,7 +407,35 @@ def produktionsdurchlauf():
 
                 query_updateBestellung = f"UPDATE Bestellung SET Auto_ID = '{auto_id_new}' WHERE BESTELLUNG_ID = '{bestellung_id}'"
                 connection.execute(query_updateBestellung)
+
+            else:
+                print("-------------Lagerbestand nicht ausreichend")
         
+        df_auslastung = pd.DataFrame({
+            'MaschinenID': m_id_ls,
+            'Timestmp': tstmp_ls,
+            'Nutzung': nutzung_ls,
+            'Dauer': dauer_ls,
+            'Auslastung': auslastung_ls
+        })
+
+        df_prodVerlauf = pd.DataFrame({
+            'MaschinenID': m_id_ls,
+            'Timestmp': tstmp_ls,
+            'Produktivität': prod_ls
+        })
+
+        df_statusVerlauf = pd.DataFrame({
+            'MaschinenID': m_id_ls,
+            'Timestmp': tstmp_ls,
+            'Status': prod_ls
+        })
+
+        print(df_auslastung)
+
+        df_auslastung.to_sql("Auslastung_Maschine", con=connection, if_exists="append", index=False)
+        df_prodVerlauf.to_sql("ProduktivitätVerlauf_Maschine", con=connection, if_exists="append", index=False)
+        df_statusVerlauf.to_sql("StatusVerlauf_Maschine", con=connection, if_exists="append", index=False)   
         trans.commit()  
 
     except:
@@ -403,12 +472,95 @@ def createandreturncar():
     trans.rollback()
     return "success"
 
+@app.route('/test/auslastung', methods=['POST'])
+def testauslastung():
+    engine, connection = setup_connection()
+    trans = connection.begin()
+    nutzung_base = [True, False]
+
+    maschinen = get_maschinenreihenfolge()
+    time = datetime.utcnow()
+    timestr = str(time)
+    time_db_format = timestr[:-6] + '0'
+    
+    m_id_ls, tstmp_ls, nutzung_ls, dauer_ls, auslastung_ls, status_ls, prod_ls = [], [], [], [], [], [], []
+
+    for strasse in maschinen:
+            print(strasse)
+            for  i in range(len(strasse)):
+                nutzung = random.choice(nutzung_base)
+                print(i, strasse[i])
+                maschinen_id, auto_id, bearbeitungszeit, position, status, prod = strasse[i]
+
+                query_letzte_nutzung = f"SELECT * FROM Auslastung_Maschine WHERE MaschinenID = '{maschinen_id}' ORDER BY Timestmp DESC LIMIT 10"
+                res_letzte_nutzung = connection.execute(query_letzte_nutzung).fetchall()
+                        
+                if res_letzte_nutzung: #only not ramp up
+                    print(res_letzte_nutzung)
+                    print(res_letzte_nutzung[0])
+                    print(res_letzte_nutzung[0][2])
+                    dauer = time - res_letzte_nutzung[0][2]
+                    dauer = dauer.total_seconds()
+                    laufzeit = dauer
+                    for t in res_letzte_nutzung:
+                        laufzeit = laufzeit + t[3]
+                    nutzungszeit = 0
+                    if nutzung:
+                        nutzungszeit = dauer
+                    for t in res_letzte_nutzung:
+                        if t[1]:
+                            nutzungszeit = nutzungszeit + t[3]
+                    
+                    auslastung = nutzungszeit/laufzeit
+
+                else:
+                    dauer, laufzeit, auslastung = 0, 0 ,0
+                    nutzung = False
+                    
+                status_ls.append(status)
+                prod_ls.append(prod)
+                m_id_ls.append(maschinen_id)
+                tstmp_ls.append(time_db_format)
+                nutzung_ls.append(nutzung)
+                dauer_ls.append(dauer)
+                auslastung_ls.append(auslastung)                    
+
+    df_auslastung = pd.DataFrame({
+        'MaschinenID': m_id_ls,
+        'Timestmp': tstmp_ls,
+        'Nutzung': nutzung_ls,
+        'Dauer': dauer_ls,
+        'Auslastung': auslastung_ls
+    })
+
+    df_prodVerlauf = pd.DataFrame({
+        'MaschinenID': m_id_ls,
+        'Timestmp': tstmp_ls,
+        'Produktivität': prod_ls
+    })
+
+    df_statusVerlauf = pd.DataFrame({
+        'MaschinenID': m_id_ls,
+        'Timestmp': tstmp_ls,
+        'Status': prod_ls
+    })
+
+    print(df_auslastung)
+
+    df_auslastung.to_sql("Auslastung_Maschine", con=connection, if_exists="append", index=False)
+    df_prodVerlauf.to_sql("ProduktivitätVerlauf_Maschine", con=connection, if_exists="append", index=False)
+    df_statusVerlauf.to_sql("StatusVerlauf_Maschine", con=connection, if_exists="append", index=False)
+    
+    trans.commit()
+    
+    return "success"
+
 @app.route('/simulation/test', methods=['POST'])
 def get_maschinenreihenfolge():
     engine, connection = setup_connection()
     maschine_ls = []
 
-    query_1 = f"SELECT MaschinenID, Auto_ID, Bearbeitungszeit, Position FROM  Maschine ORDER BY Position DESC"
+    query_1 = f"SELECT MaschinenID, Auto_ID, Bearbeitungszeit, Position, Status, Produktivitaet FROM  Maschine ORDER BY Position DESC"
     res = connection.execute(query_1).fetchall()
     maschine_ls.append(res)
     

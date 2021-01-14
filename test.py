@@ -20,13 +20,15 @@ def bestellung():
     return 
     
 def test():
-    response = requests.post('http://0.0.0.0:8404/test/createandreturncar')
-    return 
+    response = requests.post('http://0.0.0.0:8404/test/auslastung')
+    return response.text
 
 def loop(sek, loops):
     for i in range(loops):
         print(call())
         time.sleep(sek)
+
+    
 if __name__ == '__main__':
     # print(ping())
 
@@ -45,5 +47,8 @@ if __name__ == '__main__':
     #print(test())
 
     loop(1, 2)
-   
+
+    # while True:
+    #     print(test())
+    #     time.sleep(2)
     
