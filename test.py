@@ -23,6 +23,11 @@ def test():
     response = requests.post('http://0.0.0.0:8404/test/auslastung')
     return response.text
 
+def get_maschinenreihenfolge():
+    response = requests.post('http://0.0.0.0:8404/simulation/test')
+    return response.text
+
+
 def loop(sek, loops):
     for i in range(loops):
         print(call())
@@ -46,7 +51,9 @@ if __name__ == '__main__':
     #lagereingang()
     #print(test())
 
-    loop(1, 2)
+    #print(get_maschinenreihenfolge())
+
+    loop(3, 1)
 
     # while True:
     #     print(test())

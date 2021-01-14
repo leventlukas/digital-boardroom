@@ -50,7 +50,7 @@ def ws_test():
 @app.route('/simulation/lagereingang', methods=['POST'])
 def sumuliere_lagereingang():
 
-    komponenten_count = 100
+    komponenten_count = 50
 
     typ_base_ls = ['Typ', 'Batterie', 'Innenraum', 'Farbe', 'AutoFahren']
     typ_aus_base_ls = ['Model X', 'Model S', 'Model 3']
@@ -102,7 +102,7 @@ def sumuliere_lagereingang():
     df_komp.to_sql("Komponente", con=connection, if_exists="append", index=False)
     trans.commit()
 
-    pass
+    return "success"
 
 @app.route('/simulation/bestellung', methods=['POST'])
 def simuliere_bestellung():
@@ -202,19 +202,17 @@ def produktionsdurchlauf():
     try:
 
         for strasse in maschinen:
-            print(strasse)
             for  i in range(len(strasse)):
-                print(i, strasse[i])
                 maschinen_id, auto_id, bearbeitungszeit, position, status, prod = strasse[i]
 
                 if auto_id: #wenn es eine auto_id gibt arbeitet Maschine noch --> evtl ausbuchen
+                    print(f"-------------Maschine {maschinen_id} arbeitet")
                     nutzung = True
                     
                     query_auto = f"SELECT * FROM Auto WHERE Auto_ID = {auto_id}"
                     res_auto = connection.execute(query_auto).fetchall()
-                    print(res_auto)
                     zeit_in_maschine = time - res_auto[0][8]
-
+                    print(zeit_in_maschine.total_seconds(), bearbeitungszeit)
                     if zeit_in_maschine.total_seconds() >= bearbeitungszeit: # pruefen ob Maschine fertig ist
 
                         ausfuerhung = dict(
@@ -277,6 +275,7 @@ def produktionsdurchlauf():
                         connection.execute(query_updateAuto)
 
                 else: #wenn keine auto_id --> Maschine wartet
+                    print(f"-------------Maschine {maschinen_id} wartet")
                     produktionsstrasse_id =  maschinen.index(strasse)+1 
                     auto_id_pipe = None
                     nutzung = False
@@ -284,17 +283,20 @@ def produktionsdurchlauf():
                     if i == 3: # wenn erste maschine wartet id 3 --> position 4
                         query_next_auto = f"SELECT Auto_ID FROM Auto WHERE Status = 0 ORDER BY ProdTimestmp LIMIT 1"
                         res_next_auto = connection.execute(query_next_auto).fetchall()
-                        auto_id_pipe = res_next_auto[0][0]
-                        print("auto_id_pipe: "+ str(auto_id_pipe))
-                        if auto_id_pipe: # wenn es autos in der Pipeline gibt
+                        print(res_next_auto)
+                        if res_next_auto: # wenn es autos in der Pipeline gibt
+                            auto_id_pipe = res_next_auto[0][0]
+                            print("auto_id_pipe: "+ str(auto_id_pipe))
                             query_updateAuto = f"UPDATE Auto SET Status = '{position}', ProdTimestmp = '{time_db_format}', Produktionsstrasse  = '{produktionsstrasse_id}', BeginnProdTime = '{time_db_format}' WHERE Auto_ID = '{auto_id_pipe}'"
                             connection.execute(query_updateAuto)
                             query_updateMaschine = f"UPDATE Maschine SET Auto_ID = '{auto_id_pipe}' WHERE MaschinenID = '{maschinen_id}'"
                             connection.execute(query_updateMaschine)
+                        else:
+                            print("-------------Kein geplantes auto in der Pipeline")
                     else: 
                         _, a_next_id, _, _, _, _ = strasse[i+1]
                         if not a_next_id: #pruefen ob Maschine in der position vorher schon fertig ist
-                            print(maschinen_id, position)
+                            
                             query_auto = f"SELECT * FROM Auto WHERE Produktionsstrasse = '{produktionsstrasse_id}' AND Status = '{position-1}'" #TODO pruefen ob i = maschinen_id -1 fuer prodstrasse 1
                             res_auto = connection.execute(query_auto).fetchall()
                             if res_auto: #prüfen ob ein auto in dieser produktionsstufe ist (nur start und ende)
@@ -308,9 +310,6 @@ def produktionsdurchlauf():
                 res_letzte_nutzung = connection.execute(query_letzte_nutzung).fetchall()
                             
                 if res_letzte_nutzung: #only not ramp up
-                    print(res_letzte_nutzung)
-                    print(res_letzte_nutzung[0])
-                    print(res_letzte_nutzung[0][2])
                     dauer = time - res_letzte_nutzung[0][2]
                     dauer = dauer.total_seconds()
                     laufzeit = dauer
@@ -428,10 +427,8 @@ def produktionsdurchlauf():
         df_statusVerlauf = pd.DataFrame({
             'MaschinenID': m_id_ls,
             'Timestmp': tstmp_ls,
-            'Status': prod_ls
+            'Status': status_ls
         })
-
-        print(df_auslastung)
 
         df_auslastung.to_sql("Auslastung_Maschine", con=connection, if_exists="append", index=False)
         df_prodVerlauf.to_sql("ProduktivitätVerlauf_Maschine", con=connection, if_exists="append", index=False)
@@ -561,10 +558,25 @@ def get_maschinenreihenfolge():
     maschine_ls = []
 
     query_1 = f"SELECT MaschinenID, Auto_ID, Bearbeitungszeit, Position, Status, Produktivitaet FROM  Maschine ORDER BY Position DESC"
-    res = connection.execute(query_1).fetchall()
-    maschine_ls.append(res)
     
-    print(maschine_ls)
+    res = connection.execute(query_1).fetchall()
+
+    converted_ls = []
+    for item in res:
+
+        a, b, c, d, e, f = item[0], item[1], item[2], item[3], item[4], item[5]
+        umrechungsfkt = f * 0.01
+
+        if e == "Kaputt":
+            c = 9999999999999
+        else:
+            c = c * pow(umrechungsfkt, -1)
+        
+        zw = a, b, c, d, e, f
+        converted_ls.append(zw)
+    
+    maschine_ls.append(converted_ls)
+
     return maschine_ls
 
 
