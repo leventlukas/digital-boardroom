@@ -30,7 +30,7 @@ def get_maschinenreihenfolge():
 
 def loop(sek, loops):
     for i in range(loops):
-        print(call())
+        print(i, call())
         time.sleep(sek)
 
     
@@ -53,7 +53,7 @@ if __name__ == '__main__':
 
     #print(get_maschinenreihenfolge())
 
-    loop(3, 1)
+    loop(6, 100)
 
     # while True:
     #     print(test())
