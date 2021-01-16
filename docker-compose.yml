@@ -3,10 +3,15 @@ version: '2'
 services: 
   app: 
     build: .
+    environment:
+      - DB_USER=janlevent
+      - DB_PWD=DigitalBoardroom2021
+      - DB_URL=realtime-bi.tk
+      - DB_NAME=realtimebi
     volumes: 
       - ./code:/usr/src/app/
     ports:
-      - 8404:8404
+      - 30001:8404
     #To Start Container in Bash Mode:
     stdin_open: true
     tty: true

@@ -7,15 +7,17 @@ import os
 from datetime import datetime
 import random
 import pandas as pd
+import sys
+import os
 
 app = Flask(__name__)
 
 def setup_connection():
     try:
-        user = "janlevent"
-        pwd = "DigitalBoardroom2021"
-        db_url = 'realtime-bi.tk'
-        db_name = 'realtimebi' 
+        user = os.environ["DB_USER"]
+        pwd = os.environ["DB_PWD"]
+        db_url = os.environ["DB_URL"]
+        db_name = os.environ["DB_NAME"] 
         connection_string = 'mysql+pymysql://' + user + ':' + pwd + '@' + db_url + ':3306/' + db_name
         engine = sqlalchemy.create_engine(connection_string, echo=False)
         connection = engine.connect()

@@ -28,3 +28,10 @@ python server.py
 ```
 test.py
 ```
+
+# k8s setup
+
+```
+docker build -t leventlukas/digital-boardroom:latest -f ./k8s-dockerfile .
+docker push leventlukas/digital-boardroom:latest
+```
