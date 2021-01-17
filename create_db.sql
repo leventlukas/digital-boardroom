@@ -12,7 +12,8 @@ CREATE TABLE `Auto` (
   `ProdTimestmp` datetime DEFAULT NULL,
   `BeginnProdTime` datetime DEFAULT NULL,
   `Produktionsstrasse` int(11) DEFAULT NULL,
-  PRIMARY KEY (`Auto_ID`)
+  PRIMARY KEY (`Auto_ID`),
+  KEY `Auto_Status_IDX` (`Status`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=217 DEFAULT CHARSET=utf8;
 
 
@@ -59,6 +60,8 @@ CREATE TABLE `Komponente` (
   PRIMARY KEY (`KompID`),
   KEY `Komponente_FK` (`Auto_ID`),
   KEY `Komponente_FK_1` (`LagerID`),
+  KEY `Komponente_Typ_IDX` (`Typ`) USING BTREE,
+  KEY `Komponente_Ausfuehrung_IDX` (`Ausfuehrung`) USING BTREE,
   CONSTRAINT `Komponente_FK` FOREIGN KEY (`Auto_ID`) REFERENCES `Auto` (`Auto_ID`),
   CONSTRAINT `Komponente_FK_1` FOREIGN KEY (`LagerID`) REFERENCES `Lager` (`LagerID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=932 DEFAULT CHARSET=utf8;
