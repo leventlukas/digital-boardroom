@@ -47,3 +47,25 @@ spec:
       port: 8404
       targetPort: http
       nodePort: 30001
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: digital-boardroom-loopclient
+  labels:
+    app: digital-boardroom-loopclient
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: digital-boardroom-loopclient
+  template:
+    metadata:
+      labels:
+        app: digital-boardroom-loopclient
+    spec:
+      containers:
+      - name: digital-boardroom-loopclient
+        image: leventlukas/digital-boardroom:latest
+        command: ["python", "execute.py", '2']
