@@ -10,23 +10,23 @@ def call():
     return response.text
 
 def lagereingang():
-    response = requests.post(url = 'http://0.0.0.0:8404/simulation/lagereingang')
+    response = requests.post(url = 'http://0.0.0.0:30001/simulation/lagereingang')
     return json.loads(response.text)
 
 def ping():
-    response = requests.post(url = 'http://0.0.0.0:8404/ping')
+    response = requests.post(url = 'http://0.0.0.0:30001/ping')
     return response.text
 
 def bestellung():
-    response = requests.post('http://0.0.0.0:8404/simulation/bestellung')
+    response = requests.post('http://0.0.0.0:30001/simulation/bestellung')
     return 
     
 def test():
-    response = requests.post('http://0.0.0.0:8404/test/auslastung')
+    response = requests.post('http://0.0.0.0:30001/test/auslastung')
     return response.text
 
 def get_maschinenreihenfolge():
-    response = requests.post('http://0.0.0.0:8404/simulation/test')
+    response = requests.post('http://0.0.0.0:30001/simulation/test')
     return response.text
 
 def infiniloop(sek):

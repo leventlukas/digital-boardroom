@@ -108,9 +108,10 @@ def simuliere_lagereingang(komponenten_count = None):
     return "success"
 
 @app.route('/simulation/bestellung', methods=['POST'])
-def simuliere_bestellung():
+def simuliere_bestellung(bestellung_count = None):
     
-    bestellung_count = 10 # TODO: Dynamically from JSON
+    if not bestellung_count:
+        bestellung_count = 10
 
     # create random config of cars to be produced
     typ_base_ls = ['Model X', 'Model S', 'Model 3']
@@ -253,21 +254,22 @@ def produktionsdurchlauf():
                             res_bat = connection.execute(query_komp_id_Batterie).fetchall()
                             komp_id, mehrkosten_stufe = res_bat[0]
                             
-                            query_updateAuto = f"UPDATE Auto SET Wert = {wert+mehrkosten_stufe}"
+                            query_updateAuto = f"UPDATE Auto SET Wert = {wert+mehrkosten_stufe} WHERE AUTO_ID = '{auto_id}' "
                             
                         elif i == 2:
                             query_komp_id_Farbe = f"SELECT KompID, Preis FROM Komponente WHERE Typ = 'Farbe' AND AUTO_ID = '{auto_id}'"
                             res_farbe = connection.execute(query_komp_id_Farbe).fetchall()
                             komp_id, mehrkosten_stufe = res_farbe[0]
 
-                            query_updateAuto = f"UPDATE Auto SET Wert = {wert+mehrkosten_stufe}"
+                            query_updateAuto = f"UPDATE Auto SET Wert = {wert+mehrkosten_stufe} WHERE AUTO_ID = '{auto_id}'"
 
                         elif i == 3:
                             query_komp_id_typ = f"SELECT KompID, Preis FROM Komponente WHERE Typ = 'Typ' AND AUTO_ID = '{auto_id}'"
                             res_typ = connection.execute(query_komp_id_typ).fetchall()
+                            print(auto_id, res_typ)
                             komp_id, mehrkosten_stufe = res_typ[0]
 
-                            query_updateAuto = f"UPDATE Auto SET Wert = {wert+mehrkosten_stufe}"
+                            query_updateAuto = f"UPDATE Auto SET Wert = {wert+mehrkosten_stufe} WHERE AUTO_ID = '{auto_id}'"
                         
                         query_komponentenzuordnung = f"UPDATE Komponente SET Einbau = '{time_db_format}', LagerID = NULL WHERE KompID = '{komp_id}'"
                         connection.execute(query_komponentenzuordnung)
@@ -423,6 +425,9 @@ def produktionsdurchlauf():
                     if res_best_unbearbeitet >= 0: # HC erst ab 20 unbearbeiteten Bestellungen nachbestellen
                         print(f"-------------Lagerbestand auffüllen (unbearbeitete Bestellungen: {res_best_unbearbeitet})")
                         simuliere_lagereingang(20)                     
+            else:
+                print("-------------Simuliere Bestellung")
+                simuliere_bestellung(random.choice(range([0,0,0,1]))) #Bestelle zufällig wahrsch. 25%
 
         print("-------------Statusupdate Produktionshalle")  
         df_auslastung = pd.DataFrame({
@@ -436,7 +441,7 @@ def produktionsdurchlauf():
         df_prodVerlauf = pd.DataFrame({
             'MaschinenID': m_id_ls,
             'Timestmp': tstmp_ls,
-            'Produktivität': prod_ls
+            'Produktivitaet': prod_ls
         })
 
         df_statusVerlauf = pd.DataFrame({
@@ -446,7 +451,7 @@ def produktionsdurchlauf():
         })
 
         df_auslastung.to_sql("Auslastung_Maschine", con=connection, if_exists="append", index=False)
-        df_prodVerlauf.to_sql("ProduktivitätVerlauf_Maschine", con=connection, if_exists="append", index=False)
+        df_prodVerlauf.to_sql("ProduktivitaetVerlauf_Maschine", con=connection, if_exists="append", index=False)
         df_statusVerlauf.to_sql("StatusVerlauf_Maschine", con=connection, if_exists="append", index=False)   
         
         query_lb_unf = "SELECT COUNT(KompID) FROM Komponente WHERE Einbau IS Null" # Lagerbestand rohstoffe
@@ -473,10 +478,12 @@ def produktionsdurchlauf():
             
             lagerbestand_ges = lagerbestand_ges = int(lb_unf) + int(lb_rst)
 
-        lager_status = lagerbestand_ges/10000 #Kapazität aktuell HC 10000
+        lager_status = lagerbestand_ges/10000 #Kapazitaet aktuell HC 10000
 
         query_update_lagerstatus = f"UPDATE Lager SET Status = '{lager_status}' WHERE LagerID = '1'"
         connection.execute(query_update_lagerstatus)
+
+        #simuliere_bestellung(random.choice([0,0,0,1]))
         
         trans.commit()  
 
@@ -579,7 +586,7 @@ def testauslastung():
     df_prodVerlauf = pd.DataFrame({
         'MaschinenID': m_id_ls,
         'Timestmp': tstmp_ls,
-        'Produktivität': prod_ls
+        'Produktivitaet': prod_ls
     })
 
     df_statusVerlauf = pd.DataFrame({
@@ -591,7 +598,7 @@ def testauslastung():
     print(df_auslastung)
 
     df_auslastung.to_sql("Auslastung_Maschine", con=connection, if_exists="append", index=False)
-    df_prodVerlauf.to_sql("ProduktivitätVerlauf_Maschine", con=connection, if_exists="append", index=False)
+    df_prodVerlauf.to_sql("ProduktivitaetVerlauf_Maschine", con=connection, if_exists="append", index=False)
     df_statusVerlauf.to_sql("StatusVerlauf_Maschine", con=connection, if_exists="append", index=False)
     
     trans.commit()

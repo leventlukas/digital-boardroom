@@ -68,4 +68,4 @@ spec:
       containers:
       - name: digital-boardroom-loopclient
         image: leventlukas/digital-boardroom:latest
-        command: ["python", "execute.py", '2']
+        command: ["python", "execute.py", '5']
