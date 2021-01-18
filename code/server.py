@@ -4,7 +4,7 @@ from sqlalchemy import sql, text
 import json
 import requests
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 import random
 import pandas as pd
 import sys
@@ -52,7 +52,7 @@ def ws_test():
 @app.route('/simulation/lagereingang', methods=['POST'])
 def simuliere_lagereingang(komponenten_count = None):
     
-    if not komponenten_count:
+    if komponenten_count is None:
         komponenten_count = 50
 
     typ_base_ls = ['Typ', 'Batterie', 'Innenraum', 'Farbe', 'AutoFahren']
@@ -67,29 +67,61 @@ def simuliere_lagereingang(komponenten_count = None):
     for komponente in range(komponenten_count):
         komp_typ = random.choice(typ_base_ls)
         typ_ls.append(komp_typ)
+        tp_preis = 0
         
         if komp_typ == 'Typ':
-            ausf_ls.append(random.choice(typ_aus_base_ls))
-            preis_ls.append(200)
+            tp_ausf = random.choice(typ_aus_base_ls)
+            ausf_ls.append(tp_ausf)
+            if tp_ausf == 'Model X':
+                preis_ls.append(28000)
+            elif tp_ausf == 'Model S':
+                preis_ls.append(25000)
+            elif tp_ausf == 'Model 3':
+                preis_ls.append(11000)
         
         elif komp_typ == 'Batterie':
-            ausf_ls.append(random.choice(bat_aus_base_ls))
-            preis_ls.append(300)
+            tp_ausf = random.choice(bat_aus_base_ls)
+            ausf_ls.append(tp_ausf)
+            if tp_ausf == 'Maximale Reichweite':
+                preis_ls.append(5000)
+            elif tp_ausf == 'Performance':
+                preis_ls.append(11500)
+            elif tp_ausf == 'Plaid':
+                preis_ls.append(31500)
+            elif tp_ausf == 'Standard Plus':
+                preis_ls.append(2500)
 
         elif komp_typ == 'Innenraum':
-            ausf_ls.append(random.choice(inn_aus_base_ls))
-            preis_ls.append(150)
+            tp_ausf = random.choice(inn_aus_base_ls)
+            ausf_ls.append(tp_ausf)
+            if tp_ausf == 'schwarz':
+                preis_ls.append(2000)
+            elif tp_ausf == 'weiss':
+                preis_ls.append(3000)
 
         elif komp_typ == 'Farbe':
-            ausf_ls.append(random.choice(farbe_aus_base_ls))
-            preis_ls.append(50)
+            tp_ausf = random.choice(farbe_aus_base_ls)
+            ausf_ls.append(tp_ausf)
+            if tp_ausf == 'Pearl White Multi-Coat':
+                preis_ls.append(500)
+            elif tp_ausf in ['Solid Black', 'Midnight Silver Metallic', 'Deep Blue Metallic']:
+                preis_ls.append(1000)
+            elif tp_ausf == 'Red Multi-Coat':
+                preis_ls.append(1200)
 
         elif komp_typ == 'AutoFahren':
-            ausf_ls.append(random.choice(autofahr_aus_base_ls))
-            preis_ls.append(10)
+            tp_ausf = random.choice(autofahr_aus_base_ls)
+            ausf_ls.append(tp_ausf)
+            if tp_ausf == 'yes':
+                preis_ls.append(6000)
+            elif tp_ausf == 'no':
+                preis_ls.append(5000)
         
-        eingang_ls.append(datetime.now())
+        time_oneHour = timedelta(hours=1)
+        time = datetime.utcnow() + time_oneHour
+        eingang_ls.append(time)
         lager_ls.append(1)
+
     typ_ls, ausf_ls, preis_ls, eingang_ls, lager_ls
     df_komp = pd.DataFrame({
         'Typ': typ_ls,
@@ -110,7 +142,7 @@ def simuliere_lagereingang(komponenten_count = None):
 @app.route('/simulation/bestellung', methods=['POST'])
 def simuliere_bestellung(bestellung_count = None):
     
-    if not bestellung_count:
+    if bestellung_count is None:
         bestellung_count = 10
 
     # create random config of cars to be produced
@@ -162,8 +194,10 @@ def simuliere_bestellung(bestellung_count = None):
             preis_best_ls[auto] = preis_best_ls[auto] + 2900
         elif farbe_best_ls[auto] != 'Pearl White Multi-Coat':
             preis_best_ls[auto] = preis_best_ls[auto] + 1600
-
-        eingang_best_ls.append(datetime.now())
+        
+        time_oneHour = timedelta(hours=1)
+        time = datetime.utcnow() + time_oneHour
+        eingang_best_ls.append(time)
         
         autofahr_best_ls.append(random.choice(autofahr_base_ls))
         if autofahr_best_ls[auto] == 'yes':
@@ -194,9 +228,11 @@ def simuliere_bestellung(bestellung_count = None):
 def produktionsdurchlauf():
     
     maschinen = get_maschinenreihenfolge()
-    time = datetime.utcnow()
+    time_oneHour = timedelta(hours=1)
+    time = datetime.utcnow() + time_oneHour
     timestr = str(time)
     time_db_format = timestr[:-6] + '0'
+    print(time_db_format)
 
     engine, connection = setup_connection()
     trans = connection.begin()
@@ -424,10 +460,12 @@ def produktionsdurchlauf():
                     
                     if res_best_unbearbeitet >= 0: # HC erst ab 20 unbearbeiteten Bestellungen nachbestellen
                         print(f"-------------Lagerbestand auffüllen (unbearbeitete Bestellungen: {res_best_unbearbeitet})")
-                        simuliere_lagereingang(20)                     
+                        simuliere_lagereingang(15)                     
             else:
                 print("-------------Simuliere Bestellung")
-                simuliere_bestellung(random.choice(range([0,0,0,1]))) #Bestelle zufällig wahrsch. 25%
+                bestellungen = random.choice([0,0,0,1])
+                print(bestellungen)
+                simuliere_bestellung(bestellungen) #Bestelle zufällig wahrsch. 25%
 
         print("-------------Statusupdate Produktionshalle")  
         df_auslastung = pd.DataFrame({
@@ -486,14 +524,14 @@ def produktionsdurchlauf():
         #simuliere_bestellung(random.choice([0,0,0,1]))
         
         trans.commit()  
-
-    except:
-        trans.rollback()
-        raise
-    finally:
-        #trans.rollback()
         connection.close()
         engine.dispose()
+
+    except Exception as e:
+        trans.rollback()
+        connection.close()
+        engine.dispose()
+        raise
 
     return "success"
 
@@ -605,7 +643,7 @@ def testauslastung():
     
     return "success"
 
-@app.route('/simulation/test', methods=['POST'])
+@app.route('/simulation/maschinenreihenfolge', methods=['POST'])
 def get_maschinenreihenfolge():
     engine, connection = setup_connection()
     maschine_ls = []
