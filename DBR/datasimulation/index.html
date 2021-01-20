@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+
+  <title>Data Simulator</title>
+
+  <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/album/">
+	<link rel="shortcut icon" type="image/x-icon" href="../assets/img/logo_rot.png">
+
+
+  <!-- Bootstrap core CSS -->
+  <link href="../assets/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    .bd-placeholder-img {
+      font-size: 1.125rem;
+      text-anchor: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+    }
+
+    @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+      }
+    }
+  </style>
+
+
+</head>
+
+<body>
+
+  <header>
+    <div class="navbar navbar-dark bg-dark shadow-sm">
+      <div class="container">
+        <a href="http://realtime-bi.tk/DBR/datasimulation/" class="navbar-brand d-flex align-items-center">
+          <strong>Data Simulator</strong>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="py-5 text-center container">
+      <div class="row py-lg-2">
+        <div class="col-lg-6 col-md-8 mx-auto">
+          <h1 class="fw-light">Tesla Fabrik - Data Simulator</h1>
+          <p class="lead text-muted">Wähle aus, welchen Bereich du manipulieren möchtest.</p>
+          <p>
+            <a href="#" class="btn btn-primary my-2" id="maschinebut">Maschinen</a>
+            <a href="#" class="btn btn-primary my-2" id="bestellungbut">Einkauf</a>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="album py-5 bg-light" hidden id="hintergrund">
+      <div class="container" id="maschine">
+        <form action="./maschine.php" method="POST">
+        <div class="row">
+          <div class="col">
+            <div class="card shadow-sm">
+              <img src="../assets/img/1Karroserie.png" width="100%">
+
+              <div class="card-body">
+                <h6>Status: <span class="badge bg-success" id="prod1badge">Voll Funktionsfähig</span></h6>
+                <hr>
+                <p class="card-text"><span class="fw-bolder">Maschine 1 - Karrosserie</span><br>Karrosserie wird aus dem Lager genommen und aufgebaut.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="prod1plus">+</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="prod1minus">-</button>
+                  </div>
+                  <button type="button" class="btn btn-sm btn-outline-danger" id="prod1stop">Stoppen</button>
+                  <span class="badge bg-light text-dark" id="prod1">100 %</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card shadow-sm">
+              <img src="../assets/img/2Lack.png" width="100%">
+
+              <div class="card-body">
+                <h6>Status: <span class="badge bg-success" id="prod2badge">Voll Funktionsfähig</span></h6>
+                <hr>
+                <p class="card-text"><span class="fw-bolder">Maschine 2 - Lackierung</span><br>Die Karrosserie und alle anderen Komponenten werden lackiert.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="prod2plus">+</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="prod2minus">-</button>
+                  </div>
+                  <button type="button" class="btn btn-sm btn-outline-danger" id="prod2stop">Stoppen</button>
+                  <span class="badge bg-light text-dark" id="prod2">100 %</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card shadow-sm">
+              <img src="../assets/img/3Batterie.png" width="100%">
+
+              <div class="card-body">
+                <h6>Status: <span class="badge bg-success" id="prod3badge">Voll Funktionsfähig</span></h6>
+                <hr>
+                <p class="card-text"><span class="fw-bolder">Maschine 3 - Batterie</span><br>Das Herzstück des Autos wird in die Karroserie eingebaut.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="prod3plus">+</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="prod3minus">-</button>
+                  </div>
+                  <button type="button" class="btn btn-sm btn-outline-danger" id="prod3stop">Stoppen</button>
+                  <span class="badge bg-light text-dark" id="prod3">100 %</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card shadow-sm">
+              <img src="..//assets/img/4Innen.png" width="100%">
+
+              <div class="card-body">
+                <h6>Status: <span class="badge bg-success" id="prod4badge">Voll Funktionsfähig</span></h6>
+                <hr>
+                <p class="card-text"><span class="fw-bolder">Maschine 4 - Innenraum</span><br>Das Interieur wird eingebaut und der Autopilot installiert.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="prod4plus">+</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="prod4minus">-</button>
+                  </div>
+                  <button type="button" class="btn btn-sm btn-outline-danger" id="prod4stop">Stoppen</button>
+                  <span class="badge bg-light text-dark" id="prod4">33</span>
+                </div>
+              </div>
+            </div>
+          </div>
+            <input type="hidden" value="" name="ms1">
+            <input type="hidden" value="" name="ms2">
+            <input type="hidden" value="" name="ms3">
+            <input type="hidden" value="" name="ms4">
+          <button type="submit" class="btn btn-sm btn-primary mt-3" id="maschinespeichern">Speichern</button>
+          </form>
+        </div>
+      </div>
+
+
+
+
+      <div id="bestellung">
+        <div class="container">
+          <form action="./bestellung.php" method="POST">
+          <div class="row">
+            <div class="col">
+              <div class="card shadow-sm">
+                <svg class="bd-placeholder-img card-img-top" width="100%" height="100"
+                  xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail"
+                  preserveAspectRatio="xMidYMid slice" focusable="false">
+                  <title>Placeholder</title>
+                  <rect width="100%" height="100%" fill="#55595c" /><text x="50%" y="50%" fill="#eceeef" dy=".3em"
+                    class="fw-bolder">Karosserie</text>
+                </svg>
+
+                <div class="card-body">
+                  <label for="modell1" class="form-label fw-bolder">Model S</label>
+                  <input type="number" min="0"  id="modell1" class="form-control form-control-sm"
+                    aria-describedby="modell1help" value="0" name="modell1">
+                  <div id="modell1help" class="form-text">
+                    Aktueller Lagerpreis: <span id="lp1" class="fw-bolder">333</span> € pro Stück <br>
+                    Aktueller Marktpreis: <span id="mp1" class="fw-bolder">333</span> € pro Stück
+                  </div>
+                  <hr>
+                  <label for="modell2" class="form-label fw-bolder">Model 3</label>
+                  <input type="number" min="0"  id="modell2" class="form-control form-control-sm"
+                    aria-describedby="modell2help" value="0" name="modell2">
+                  <div id="modell2help" class="form-text">
+                    Aktueller Lagerpreis: <span id="lp2" class="fw-bolder">333</span> € pro Stück <br>
+                    Aktueller Marktpreis: <span id="mp2" class="fw-bolder">333</span> € pro Stück
+                  </div>
+                  <hr>
+                  <label for="modell3" class="form-label fw-bolder">Model X</label>
+                  <input type="number" min="0"  id="modell3" class="form-control form-control-sm"
+                    aria-describedby="modell3help" value="0" name="modell3">
+                  <div id="modell3help" class="form-text">
+                    Aktueller Lagerpreis: <span id="lp3" class="fw-bolder">333</span> € pro Stück <br>
+                    Aktueller Marktpreis: <span id="mp3" class="fw-bolder">333</span> € pro Stück
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <svg class="bd-placeholder-img card-img-top" width="100%" height="100"
+                  xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail"
+                  preserveAspectRatio="xMidYMid slice" focusable="false">
+                  <title>Placeholder</title>
+                  <rect width="100%" height="100%" fill="#55595c" /><text x="50%" y="50%" fill="#eceeef" dy=".3em"
+                    class="fw-bolder">Batterie</text>
+                </svg>
+
+                <div class="card-body">
+                  <label for="batterie1" class="form-label fw-bolder">Standard</label>
+                  <input type="number" min="0" id="batterie1" class="form-control form-control-sm"
+                    aria-describedby="batterie1help" value="0" name="batterie1">
+                  <div id="batterie1help" class="form-text">
+                    Aktueller Lagerpreis: <span id="lp4" class="fw-bolder">333</span> € pro Stück <br>
+                    Aktueller Marktpreis: <span id="mp4" class="fw-bolder">333</span> € pro Stück
+                  </div>
+                  <hr>
+                  <label for="batterie2" class="form-label fw-bolder">Maximale Reichweite</label>
+                  <input type="number" min="0"  id="batterie2" class="form-control form-control-sm"
+                    aria-describedby="batterie2help" value="0" name="batterie2">
+                  <div id="batterie2help" class="form-text">
+                    Aktueller Lagerpreis: <span id="lp5" class="fw-bolder">333</span> € pro Stück <br>
+                    Aktueller Marktpreis: <span id="mp5" class="fw-bolder">333</span> € pro Stück
+                  </div>
+                  <hr>
+                  <label for="batterie3" class="form-label fw-bolder">Performance</label>
+                  <input type="number" min="0" id="batterie3" class="form-control form-control-sm"
+                    aria-describedby="batterie3help" value="0" name="batterie3">
+                  <div id="batterie3help" class="form-text">
+                    Aktueller Lagerpreis: <span id="lp6" class="fw-bolder">333</span> € pro Stück <br>
+                    Aktueller Marktpreis: <span id="mp6" class="fw-bolder">333</span> € pro Stück
+                  </div>
+                  <hr>
+                  <label for="batterie4" class="form-label fw-bolder">Plaid</label>
+                  <input type="number" min="0" id="batterie4" class="form-control form-control-sm"
+                    aria-describedby="batterie4help" value="0" name="batterie4">
+                  <div id="batterie4help" class="form-text">
+                    Aktueller Lagerpreis: <span id="lp7" class="fw-bolder">333</span> € pro Stück <br>
+                    Aktueller Marktpreis: <span id="mp7" class="fw-bolder">333</span> € pro Stück
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <svg class="bd-placeholder-img card-img-top" width="100%" height="100"
+                  xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail"
+                  preserveAspectRatio="xMidYMid slice" focusable="false">
+                  <title>Placeholder</title>
+                  <rect width="100%" height="100%" fill="#55595c" /><text x="50%" y="50%" fill="#eceeef" dy=".3em"
+                    class="fw-bolder">Lack</text>
+                </svg>
+
+                <div class="card-body">
+                  <label for="farbe1" class="form-label fw-bolder">Pearl White Multi-Coat</label>
+                  <input type="number" min="0" id="farbe1" class="form-control form-control-sm"
+                    aria-describedby="farbe1help" value="0" name="farbe1">
+                  <div id="farbe1help" class="form-text">
+                    Aktueller Lagerpreis: <span id="lp8" class="fw-bolder">333</span> € pro Stück <br>
+                    Aktueller Marktpreis: <span id="mp8" class="fw-bolder">333</span> € pro Stück
+                  </div>
+                  <hr>
+                  <label for="farbe2" class="form-label fw-bolder">Solid Black</label>
+                  <input type="number" min="0"  id="farbe2" class="form-control form-control-sm"
+                    aria-describedby="farbe2help" value="0" name="farbe2">
+                  <div id="farbe2help" class="form-text">
+                    Aktueller Lagerpreis: <span id="lp9" class="fw-bolder">333</span> € pro Stück <br>
+                    Aktueller Marktpreis: <span id="mp9" class="fw-bolder">333</span> € pro Stück
+                  </div>
+                  <hr>
+                  <label for="farbe3" class="form-label fw-bolder">Midnight Silver Metallic</label>
+                  <input type="number" min="0"  id="farbe3" class="form-control form-control-sm"
+                    aria-describedby="farbe3help" value="0" name="farbe3">
+                  <div id="farbe3help" class="form-text">
+                    Aktueller Lagerpreis: <span id="lp10" class="fw-bolder">333</span> € pro Stück <br>
+                    Aktueller Marktpreis: <span id="mp10" class="fw-bolder">333</span> € pro Stück
+                  </div>
+                  <hr>
+                  <label for="farbe4" class="form-label fw-bolder">Deep Blue Metallic</label>
+                  <input type="number" min="0"  id="farbe4" class="form-control form-control-sm"
+                    aria-describedby="farbe4help" value="0" name="farbe4">
+                  <div id="farbe4help" class="form-text">
+                    Aktueller Lagerpreis: <span id="lp11" class="fw-bolder">333</span> € pro Stück <br>
+                    Aktueller Marktpreis: <span id="mp11" class="fw-bolder">333</span> € pro Stück
+                  </div>
+                  <hr>
+                  <label for="farbe5" class="form-label fw-bolder">Red Multi-Coat</label>
+                  <input type="number" min="0"  id="farbe5" class="form-control form-control-sm"
+                    aria-describedby="farbe5help" value="0" name="farbe5">
+                  <div id="farbe5help" class="form-text">
+                    Aktueller Lagerpreis: <span id="lp12" class="fw-bolder">333</span> € pro Stück <br>
+                    Aktueller Marktpreis: <span id="mp12" class="fw-bolder">333</span> € pro Stück
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="card shadow-sm">
+                <svg class="bd-placeholder-img card-img-top" width="100%" height="100"
+                  xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail"
+                  preserveAspectRatio="xMidYMid slice" focusable="false">
+                  <title>Placeholder</title>
+                  <rect width="100%" height="100%" fill="#55595c" /><text x="50%" y="50%" fill="#eceeef" dy=".3em"
+                    class="fw-bolder">Leder</text>
+                </svg>
+
+                <div class="card-body">
+                  <label for="leder1" class="form-label fw-bolder">Schwarz</label>
+                  <input type="number" min="0"  id="leder1" class="form-control form-control-sm"
+                    aria-describedby="leder1help" value="0" name="leder1">
+                  <div id="leder1help" class="form-text">
+                    Aktueller Lagerpreis: <span id="lp13" class="fw-bolder">333</span> € pro Stück <br>
+                    Aktueller Marktpreis: <span id="mp13" class="fw-bolder">333</span> € pro Stück
+                  </div>
+                  <hr>
+                  <label for="leder2" class="form-label fw-bolder">Weiß</label>
+                  <input type="number" min="0"  id="leder2" class="form-control form-control-sm"
+                    aria-describedby="leder2help" value="0" name="leder2">
+                  <div id="leder2help" class="form-text">
+                    Aktueller Lagerpreis: <span id="lp14" class="fw-bolder">333</span> € pro Stück <br>
+                    Aktueller Marktpreis: <span id="mp14" class="fw-bolder">333</span> € pro Stück
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-sm btn-primary mt-3" id="bestellen">Bestellen</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+<hr>
+<div class="position-relative"><div class="position-absolute top-50 start-50 translate-middle"><br><p class="fw-light">&copy; by Levent Lukas & Jan Warwas</p></div></div>
+  <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script>
+
+    var prod1 = 100;
+    var prod2 = 100;
+    var prod3 = 100;
+    var prod4 = 100;
+
+    var lagerpreise = [25000,11000,28000,2500,5000,11500,31500,500,1000,1000,1000, 1200, 2000, 3000];
+    var marktpreise = [25000*1.5,11000*1.5,28000*1.5,2500*1.5,5000*1.5,11500*1.5,31500*1.5,500*1.5,1000*1.5,1000*1.5,1000*1.5, 1200*1.5, 2000*1.5, 3000*1.5];
+    function updatemp() {
+      $('#mp1').text(getNumberWithCommas(marktpreise[0]));
+      $('#mp2').text(getNumberWithCommas(marktpreise[1]));
+      $('#mp3').text(getNumberWithCommas(marktpreise[2]));
+      $('#mp4').text(getNumberWithCommas(marktpreise[3]));
+      $('#mp5').text(getNumberWithCommas(marktpreise[4]));
+      $('#mp6').text(getNumberWithCommas(marktpreise[5]));
+      $('#mp7').text(getNumberWithCommas(marktpreise[6]));
+      $('#mp8').text(getNumberWithCommas(marktpreise[7]));
+      $('#mp9').text(getNumberWithCommas(marktpreise[8]));
+      $('#mp10').text(getNumberWithCommas(marktpreise[9]));
+      $('#mp11').text(getNumberWithCommas(marktpreise[10]));
+      $('#mp12').text(getNumberWithCommas(marktpreise[11]));
+      $('#mp13').text(getNumberWithCommas(marktpreise[12]));
+      $('#mp14').text(getNumberWithCommas(marktpreise[13]));
+
+      $('#lp1').text(getNumberWithCommas(lagerpreise[0]));
+      $('#lp2').text(getNumberWithCommas(lagerpreise[1]));
+      $('#lp3').text(getNumberWithCommas(lagerpreise[2]));
+      $('#lp4').text(getNumberWithCommas(lagerpreise[3]));
+      $('#lp5').text(getNumberWithCommas(lagerpreise[4]));
+      $('#lp6').text(getNumberWithCommas(lagerpreise[5]));
+      $('#lp7').text(getNumberWithCommas(lagerpreise[6]));
+      $('#lp8').text(getNumberWithCommas(lagerpreise[7]));
+      $('#lp9').text(getNumberWithCommas(lagerpreise[8]));
+      $('#lp10').text(getNumberWithCommas(lagerpreise[9]));
+      $('#lp11').text(getNumberWithCommas(lagerpreise[10]));
+      $('#lp12').text(getNumberWithCommas(lagerpreise[11]));
+      $('#lp13').text(getNumberWithCommas(lagerpreise[12]));
+      $('#lp14').text(getNumberWithCommas(lagerpreise[13]));
+    }
+    function updatebadge1(prod1) {
+      if (prod1 == 0) {
+        $('#prod1badge').text("Gestoppt");
+        $("#prod1badge").removeClass("bg-warning");
+        $("#prod1badge").addClass("bg-danger");
+
+      } else if (prod1 == 100) {
+        $('#prod1badge').text("Voll Funktionsfähig");
+        $("#prod1badge").removeClass("bg-warning");
+        $("#prod1badge").addClass("bg-success");
+      } else {
+        $('#prod1badge').text("Warnung");
+        $("#prod1badge").removeClass("bg-success");
+        $("#prod1badge").removeClass("bg-danger");
+        $("#prod1badge").addClass("bg-warning");
+      }
+    }
+
+    function updatebadge2(prod2) {
+      if (prod2 == 0) {
+        $('#prod2badge').text("Gestoppt");
+        $("#prod2badge").removeClass("bg-warning");
+        $("#prod2badge").addClass("bg-danger");
+
+      } else if (prod2 == 100) {
+        $('#prod2badge').text("Voll Funktionsfähig");
+        $("#prod2badge").removeClass("bg-warning");
+        $("#prod2badge").addClass("bg-success");
+      } else {
+        $('#prod2badge').text("Warnung");
+        $("#prod2badge").removeClass("bg-success");
+        $("#prod2badge").removeClass("bg-danger");
+        $("#prod2badge").addClass("bg-warning");
+      }
+    }
+
+    function updatebadge3(prod3) {
+      if (prod3 == 0) {
+        $('#prod3badge').text("Gestoppt");
+        $("#prod3badge").removeClass("bg-warning");
+        $("#prod3badge").addClass("bg-danger");
+
+      } else if (prod3 == 100) {
+        $('#prod3badge').text("Voll Funktionsfähig");
+        $("#prod3badge").removeClass("bg-warning");
+        $("#prod3badge").addClass("bg-success");
+      } else {
+        $('#prod3badge').text("Warnung");
+        $("#prod3badge").removeClass("bg-success");
+        $("#prod3badge").removeClass("bg-danger");
+        $("#prod3badge").addClass("bg-warning");
+      }
+    }
+
+    function updatebadge4(prod4) {
+      if (prod4 == 0) {
+        $('#prod4badge').text("Gestoppt");
+        $("#prod4badge").removeClass("bg-warning");
+        $("#prod4badge").addClass("bg-danger");
+
+      } else if (prod4 == 100) {
+        $('#prod4badge').text("Voll Funktionsfähig");
+        $("#prod4badge").removeClass("bg-warning");
+        $("#prod4badge").addClass("bg-success");
+      } else {
+        $('#prod4badge').text("Warnung");
+        $("#prod4badge").removeClass("bg-success");
+        $("#prod4badge").removeClass("bg-danger");
+        $("#prod4badge").addClass("bg-warning");
+      }
+    }
+
+    $(document).ready(function () {
+      $("#prod1plus").click(function () {
+        if (prod1 < 100) {
+          prod1 = prod1 + 10;
+          $('#prod1').text(prod1 + " %");
+
+        }
+        updatebadge1(prod1);
+      });
+    });
+
+    $(document).ready(function () {
+      $("#prod1minus").click(function () {
+        if (prod1 > 0) {
+          prod1 = prod1 - 10;
+          $('#prod1').text(prod1 + " %");
+        } updatebadge1(prod1);
+      });
+    });
+
+    $(document).ready(function () {
+      $("#prod1stop").click(function () {
+        prod1 = 0;
+        $('#prod1').text(prod1 + " %");
+        updatebadge1(prod1);
+
+      });
+    });
+
+    $(document).ready(function () {
+      $("#prod2plus").click(function () {
+        if (prod2 < 100) {
+          prod2 = prod2 + 10;
+          $('#prod2').text(prod2 + " %");
+
+        }
+        updatebadge2(prod2);
+      });
+    });
+
+    $(document).ready(function () {
+      $("#prod2minus").click(function () {
+        if (prod2 > 0) {
+          prod2 = prod2 - 10;
+          $('#prod2').text(prod2 + " %");
+        } updatebadge2(prod2);
+      });
+    });
+
+    $(document).ready(function () {
+      $("#prod2stop").click(function () {
+        prod2 = 0;
+        $('#prod2').text(prod2 + " %");
+        updatebadge2(prod2);
+
+      });
+    });
+    $(document).ready(function () {
+      $("#prod3plus").click(function () {
+        if (prod3 < 100) {
+          prod3 = prod3 + 10;
+          $('#prod3').text(prod3 + " %");
+
+        }
+        updatebadge3(prod3);
+      });
+    });
+
+    $(document).ready(function () {
+      $("#prod3minus").click(function () {
+        if (prod3 > 0) {
+          prod3 = prod3 - 10;
+          $('#prod3').text(prod3 + " %");
+        } updatebadge3(prod3);
+      });
+    });
+
+    $(document).ready(function () {
+      $("#prod3stop").click(function () {
+        prod3 = 0;
+        $('#prod3').text(prod3 + " %");
+        updatebadge3(prod3);
+
+      });
+    });
+
+    $(document).ready(function () {
+      $("#prod4plus").click(function () {
+        if (prod4 < 100) {
+          prod4 = prod4 + 10;
+          $('#prod4').text(prod4 + " %");
+
+        }
+        updatebadge4(prod4);
+      });
+    });
+
+    $(document).ready(function () {
+      $("#prod4minus").click(function () {
+        if (prod4 > 0) {
+          prod4 = prod4 - 10;
+          $('#prod4').text(prod4 + " %");
+        } updatebadge4(prod4);
+      });
+    });
+
+    $(document).ready(function () {
+      $("#prod4stop").click(function () {
+        prod4 = 0;
+        $('#prod4').text(prod4 + " %");
+        updatebadge4(prod4);
+
+      });
+    });
+
+    $(document).ready(function () {
+      $("#maschinebut").click(function () {
+        $('#maschine').show();
+        $('#bestellung').hide();
+        $('#hintergrund').removeAttr('hidden');
+
+
+        $.getJSON('http://realtime-bi.tk/DBR/realtime/Maschine_Status.php', function(data) {
+               
+          updatebadge1(parseInt(data[0].prod))
+          updatebadge2(parseInt(data[1].prod))
+          updatebadge3(parseInt(data[2].prod))
+          updatebadge4(parseInt(data[3].prod))
+
+
+          prod1 = parseInt(data[0].prod)
+          prod2 = parseInt(data[1].prod)
+          prod3 = parseInt(data[2].prod)
+          prod4 = parseInt(data[3].prod)
+
+          $('#prod1').text(prod1 + " %");
+          $('#prod2').text(prod2 + " %");
+          $('#prod3').text(prod3 + " %");
+          $('#prod4').text(prod4 + " %");
+
+        });
+
+
+
+      });
+    });
+
+    $(document).ready(function () {
+      $("#bestellungbut").click(function () {
+        $('#maschine').hide();
+        $('#bestellung').show();
+        $('#hintergrund').removeAttr('hidden');
+        updatemp();
+      });
+    });
+
+    $(document).ready(function () {
+      $("#maschinespeichern").click(function () {
+        $('input[name="ms1"]').val(prod1);
+        $('input[name="ms2"]').val(prod2);
+        $('input[name="ms3"]').val(prod3);
+        $('input[name="ms4"]').val(prod4);
+      });
+    });
+
+    $(document).ready(function () {
+      $("#bestellen").click(function () {
+        $('input[name="ms1"]').val(prod1);
+        $('input[name="ms2"]').val(prod2);
+        $('input[name="ms3"]').val(prod3);
+        $('input[name="ms4"]').val(prod4);
+      });
+    });
+	  function getNumberWithCommas(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+	  
+  </script>
+
+</body>
+
+</html>

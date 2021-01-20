@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tesla - Konfigurator</title>
+	<link rel="shortcut icon" type="image/x-icon" href="../assets/img/logo_rot.png">
+  <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/pricing/">
+
+  <!-- Bootstrap core CSS -->
+  <link href="../assets/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+  <style>
+    .bd-placeholder-img {
+      font-size: 1.125rem;
+      text-anchor: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+    }
+
+    @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+      }
+    }
+  </style>
+
+
+  <!-- Custom styles for this template -->
+  <link href="pricing.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <header class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
+    <p class="h5 my-0 me-md-auto fw-normal"><img src="../assets/img/logo.png" width="15%"></p>
+    <nav class="my-2 my-md-0 me-md-3">
+      <a class="p-2 text-dark text-decoration-none" href="https://www.tesla.com/de_de/models">Model S</a>
+      <a class="p-2 text-dark text-decoration-none" href="https://www.tesla.com/de_de/model3">Model 3</a>
+      <a class="p-2 text-dark text-decoration-none" href="https://www.tesla.com/de_de/modelx">Model X</a>
+      <a class="p-2 text-dark text-decoration-none" href="https://www.tesla.com/de_de/modely">Model Y</a>
+      <a class="p-2 text-dark text-decoration-none" href="https://www.tesla.com/de_de/powerwall">Powerwall</a>
+      <a class="p-2 text-dark text-decoration-none" href="https://www.tesla.com/de_de/charging">Aufladen</a>
+    </nav>
+    <a class="btn btn-outline-primary" href="https://www.tesla.com/de_de/teslaaccount">Konto</a>
+  </header>
+
+  <main class="container">
+    <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+      <h1 class="display-4">Konfigurator</h1>
+      <p class="lead">Konfiguriere dir hier schnell und unkompliziert dein elektrisches Traumauto</p>
+    </div>
+    <div class="alert alert-secondary" role="alert">
+      <img src="../assets/icons/information.svg" alt="" width="25" height="25" class="me-3"><span class="mt-2">Alle
+        Fahrzeuge qualifizieren sich für den Umweltbonus von 9.000 €. <a
+          href="https://www.tesla.com/de_DE/support/incentives?redirect=no" class="alert-link">Weitere
+          Informationen</a></span>
+    </div>
+    <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
+      <div class="col">
+        <div class="card mb-4 shadow-sm">
+          <div class="card-header">
+            <h4 class="my-0 fw-normal">Model S</h4>
+          </div>
+          <div class="card-body">
+            <img src="../assets/img/model-s@2x.jpeg" width="95%">
+            <input type="radio" class="btn-check" name="modell" id="modell1" autocomplete="off" value="modell1">
+            <label class="btn btn-outline-primary mt-3" for="modell1">Auswählen</label>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card mb-4 shadow-sm">
+          <div class="card-header">
+            <h4 class="my-0 fw-normal">Model 3</h4>
+          </div>
+          <div class="card-body">
+            <img src="../assets/img/lhd-model-3-social.png" width="95%">
+            <input type="radio" class="btn-check" name="modell" id="modell2" autocomplete="off" value="modell2">
+            <label class="btn btn-outline-primary mt-3" for="modell2">Auswählen</label>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card mb-4 shadow-sm">
+          <div class="card-header">
+            <h4 class="my-0 fw-normal">Model X</h4>
+          </div>
+          <div class="card-body">
+            <img src="../assets/img/model-x-social.jpg" width="95%">
+            <input type="radio" class="btn-check" name="modell" id="modell3" autocomplete="off" value="modell3">
+            <label class="btn btn-outline-primary mt-3" for="modell3">Auswählen</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="konfiguratorrest" style="display: none;">
+      <hr>
+      <h4>Ihr Fahrzeug wählen</h4><br>
+      <div class="container">
+        <div class="row">
+          <div class="col-6">
+            <input type="radio" class="btn-check" name="options-outlined" id="art1" autocomplete="off" value="artwahl1">
+            <label class="btn btn-outline-primary" for="art1" style="width: 45%;"><span
+                id="artbezeichnung1">test</span></label><span class="badge bg-light text-dark ms-3"
+              id="art1preis">30.000 €</span><br><br>
+            <input type="radio" class="btn-check" name="options-outlined" id="art2" autocomplete="off" value="artwahl2">
+            <label class="btn btn-outline-primary" for="art2" style="width: 45%;"><span
+                id="artbezeichnung2">test</span></label><span class="badge bg-light text-dark ms-3"
+              id="art2preis">30.000 €</span><br><br>
+            <div id="art3optional">
+              <input type="radio" class="btn-check" name="options-outlined" id="art3" autocomplete="off"
+                value="artwahl3">
+              <label class="btn btn-outline-primary" for="art3" style="width: 45%;"><span
+                  id="artbezeichnung3">test</span></label><span class="badge bg-light text-dark ms-3"
+                id="art3preis">30.000 €</span>
+            </div>
+          </div>
+          <div class="col align-self-center">
+            <div class="row align-items-start">
+              <div class="col border-end text-center">
+                <h2><span id="reichweite">580km</span></h2>Reichweite
+              </div>
+              <div class="col border-end text-center">
+                <h2><span id="vmax">261km/h</span></h2>Höchstgeschwindigkeit
+              </div>
+              <div class="col text-center">
+                <h2><span id="0100">3,3s</span></h2>0-100 km/h
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr>
+        <h4>Ihre Farbe wählen</h4><br>
+        <div class="container">
+          <div class="row">
+            <div class="col-sm text-center">
+              <img src="../assets/img/ui_swat_col_ppsw.png" width="30%"><br>
+              <input class="form-check-input mt-3" type="radio" name="colorpick" id="colorpick1" value="silber"
+                checked />
+            </div>
+            <div class="col-sm text-center">
+              <img src="../assets/img/ui_swat_col_pbsb.png" width="30%"><br>
+              <input class="form-check-input mt-3" type="radio" name="colorpick" id="colorpick2" value="schwarz" />
+            </div>
+            <div class="col-sm text-center">
+              <img src="../assets/img/ui_swat_col_pmng.png" width="30%"><br>
+              <input class="form-check-input mt-3" type="radio" name="colorpick" id="colorpick3" value="grau" />
+            </div>
+            <div class="col-sm text-center">
+              <img src="../assets/img/ui_swat_col_ppsb.png" width="30%"><br>
+              <input class="form-check-input mt-3" type="radio" name="colorpick" id="colorpick4" value="blau" />
+            </div>
+            <div class="col-sm text-center">
+              <img src="../assets/img/ui_swat_col_ppmr.png" width="30%"><br>
+              <input class="form-check-input mt-3" type="radio" name="colorpick" id="colorpick5" value="rot" />
+            </div>
+          </div>
+          <b id="farbeausgabe">Pearl White Multi-Coat</b><span class="badge bg-light text-dark ms-4 mt-4"
+            id="farbepreis">inklusive</span>
+        </div>
+        <hr>
+        <h4>Ihre Ausstattung wählen</h4><br>
+        <div class="container pb-5">
+          <h6>Innenraum</h6>
+          <div class="row">
+            <div class="col-sm">
+              <img src="../assets/img/schwarz.png" width="50%">
+            </div>
+            <div class="col-sm">
+              <img src="../assets/img/weiss.png" width="50%">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm">
+
+              <div class="form-check form-switch mt-2">
+                <input class="form-check-input innenfarbecheck" type="radio" id="innenfarbecheck" name="innenfarbecheck" checked value=0>
+                <label class="form-check-label" for="flexSwitchCheckDefault">Komplett schwarz</label><span
+                  class="badge bg-light text-dark ms-3">inklusive</span>
+              </div>
+            </div>
+            <div class="col-sm">
+
+              <div class="form-check form-switch mt-2">
+                <input class="form-check-input innenfarbecheck" type="radio" id="innenfarbecheck" name="innenfarbecheck" value=1>
+                <label class="form-check-label" for="flexSwitchCheckDefault">Schwarz und Weiß</label><span
+                  class="badge bg-light text-dark ms-3">1.600 €</span>
+              </div>
+            </div>
+          </div>
+          <br>
+          <h6>Autopilot</h6>
+          <div class="row">
+            <div class="col-sm">
+
+              <img src="../assets/img/section-hero-carnival@2x.jpg" width="50%">
+            </div>
+            <div class="col-sm">
+
+              <img src="../assets/img/self-driving-car-02.png" width="50%">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm">
+
+              <div class="form-check form-switch mt-2">
+                <input class="form-check-input autopilotcheck" type="radio" id="autopilotcheck" name="autopilotcheck" value=0 checked>
+                <label class="form-check-label" for="flexSwitchCheckDefault">Autopilot</label><span
+                  class="badge bg-light text-dark ms-3">inklusive</span>
+              </div>
+            </div>
+            <div class="col-sm">
+
+              <div class="form-check form-switch mt-2">
+                <input class="form-check-input autopilotcheck" type="radio" id="autopilotcheck" name="autopilotcheck"  value=1>
+                <label class="form-check-label" for="flexSwitchCheckDefault">Autonomes Fahren</label><span
+                  class="badge bg-light text-dark ms-3">7.500 €</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br>
+        <br>
+      </div>
+      <footer class="fixed-bottom bg-secondary">
+        <div class="container">
+          <div class="row">
+            <div class="col-sm align-self-center">
+              <span class="text-white fs-4 fw-bolder" id="preisfinal">0,00 €</span><br><span class="text-white">inkl.
+                MwSt.</span>
+            </div>
+            <div class="col-sm d-flex justify-content-end">
+              <p class="text-white mt-4">Vorraussichtliche Lieferung: Q2 2021</p>
+            </div>
+            <div class="col-sm d-flex justify-content-end">
+              <button type="button" class="btn btn-primary px-5 my-3 rounded" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="kaufen">Kaufen</button>
+            </div>
+          </div>
+        </div>
+      </footer>
+  </main>
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Kauf bestätigen</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+Mit dem Klick auf "Kaufen" schließt du deine Bestellung ab. Du bekommst anschließend eine Bestätigungsmail. <br><br>
+<h4>Deine Bestellung</h4>
+<span id="kaufmodellinfo" class="fw-bolder"></span><br>
+<span id="kaufpreisinfo" class="fst-italic"></span><br><br>
+Aus Sicherheitsgründen wird deine IP-Adresse <span id="ipinfo" class="fw-bolder"></span> gespeichert.
+      </div>
+		<form action="./script.php" method="POST">
+  <input type="hidden" id="orderjson" value="" name="orderjson"> 
+<input type="hidden" id="orderjsonpreis" value="" name="orderjsonpreis"> 
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+        <button type="submit" class="btn btn-primary" id="kaufbeenden" >Kaufen</button>
+</form> 
+      </div>
+    </div>
+  </div>
+</div>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script>
+
+    let autospecs = [
+      ['652km', '250km/h', '3,8s', 81990],
+      ['639km', '261km/h', '2,5s', 98990],
+      ['840km', '320km/h', '2,1s', 139990],
+      ['430km', '225km/h', '5,6s', 42900],
+      ['580km', '233km/h', '4,4s', 52490],
+      ['567km', '261km/h', '3,3s', 58490],
+      ['561km', '250km/h', '4,6s', 90990],
+      ['548km', '261km/h', '2,8s', 107990]
+    ];
+
+    var preisauto = 0;
+    var preisfarbe = 0;
+    var preisinnenfarbe = 0;
+    var preispilot = 0;
+    var gesamtpreis = 0;
+
+    var modellid = 0;
+    var artid = 0;
+
+    var kaufmodell = '';
+
+    var bestellfarbe = 1;
+    var bestellautopilot = 0;
+    var bestellinnen = 0;
+
+    var orderjsongen = '';
+    var ip = '';
+    function updatepreis() {
+      gesamtpreis = preisauto + preisfarbe + preisinnenfarbe + preispilot;
+      $('#preisfinal').text(gesamtpreis.toLocaleString() + " €");
+    }
+
+    function updatespecs() {
+      if (artid == 0) {
+        if (modellid == 0) {
+          $('#reichweite').text(autospecs[0][0]);
+          $('#vmax').text(autospecs[0][1]);
+          $('#0100').text(autospecs[0][2]);
+          preisauto = autospecs[0][3];
+        } else if (modellid == 1) {
+          $('#reichweite').text(autospecs[3][0]);
+          $('#vmax').text(autospecs[3][1]);
+          $('#0100').text(autospecs[3][2]);
+          preisauto = autospecs[3][3];
+        } else if (modellid == 2) {
+          $('#reichweite').text(autospecs[6][0]);
+          $('#vmax').text(autospecs[6][1]);
+          $('#0100').text(autospecs[6][2]);
+          preisauto = autospecs[6][3];
+        }
+      } else if (artid == 1) {
+        if (modellid == 0) {
+          $('#reichweite').text(autospecs[1][0]);
+          $('#vmax').text(autospecs[1][1]);
+          $('#0100').text(autospecs[1][2]);
+          preisauto = autospecs[1][3];
+        } else if (modellid == 1) {
+          $('#reichweite').text(autospecs[4][0]);
+          $('#vmax').text(autospecs[4][1]);
+          $('#0100').text(autospecs[4][2]);
+          preisauto = autospecs[4][3];
+        } else if (modellid == 2) {
+          $('#reichweite').text(autospecs[7][0]);
+          $('#vmax').text(autospecs[7][1]);
+          $('#0100').text(autospecs[7][2]);
+          preisauto = autospecs[7][3];
+        }
+      } else if (artid == 2) {
+        if (modellid == 0) {
+          $('#reichweite').text(autospecs[2][0]);
+          $('#vmax').text(autospecs[2][1]);
+          $('#0100').text(autospecs[2][2]);
+          preisauto = autospecs[2][3];
+        } else if (modellid == 1) {
+          $('#reichweite').text(autospecs[5][0]);
+          $('#vmax').text(autospecs[5][1]);
+          $('#0100').text(autospecs[5][2]);
+          preisauto = autospecs[5][3];
+        }
+      }
+    }
+
+    $(document).ready(function () {
+      $('input:radio[name=modell]').change(function () {
+        if (this.value == 'modell1') {
+          $('#art3optional').show();
+
+          preisauto = 81990;
+          updatepreis();
+
+          $('#artbezeichnung1').text("Maximale Reichweite");
+          $('#artbezeichnung2').text("Performance");
+          $('#artbezeichnung3').text("Plaid");
+
+          $('#art1').prop('checked', true);
+
+          $('#konfiguratorrest').show();
+
+          $('#art1preis').text("81.990 €");
+          $('#art2preis').text("98.990 €");
+          $('#art3preis').text("139.990 €");
+
+          modellid = 0;
+          artid = 0;
+          updatespecs();
+          
+          kaufmodell = "Tesla Model S";
+        }
+        else if (this.value == 'modell2') {
+          $('#art3optional').show();
+
+          preisauto = 42900;
+          updatepreis();
+
+          $('#artbezeichnung1').text("Standard Plus");
+          $('#artbezeichnung2').text("Maximale Reichweite");
+          $('#artbezeichnung3').text("Performance");
+
+          $('#art1').prop('checked', true);
+
+          $('#konfiguratorrest').show();
+
+          $('#art1preis').text("42.900 €");
+          $('#art2preis').text("52.490 €");
+          $('#art3preis').text("58.490 €");
+
+          modellid = 1;
+          artid = 0;
+          updatespecs();
+
+          kaufmodell = "Tesla Model 3";
+        }
+        else if (this.value == 'modell3') {
+          $('#art3optional').hide();
+
+          preisauto = 90990;
+          updatepreis();
+
+          $('#artbezeichnung1').text("Maximale Reichweite");
+          $('#artbezeichnung2').text("Performance");
+
+          $('#art1').prop('checked', true);
+
+          $('#konfiguratorrest').show();
+
+          $('#art1preis').text("90.990 €");
+          $('#art2preis').text("107.990 €");
+
+          modellid = 2;
+          artid = 0;
+          updatespecs();
+
+          kaufmodell = "Tesla Modell X";
+        }
+      });
+    });
+
+    $(document).ready(function () {
+      $('input:radio[name=options-outlined]').change(function () {
+        if (this.value == 'artwahl1') {
+          artid = 0;
+          updatespecs();
+          updatepreis();
+
+        }
+        else if (this.value == 'artwahl2') {
+          artid = 1;
+          updatespecs();
+          updatepreis();
+        }
+        else if (this.value == 'artwahl3') {
+          artid = 2;
+          updatespecs();
+          updatepreis();
+
+        }
+      });
+    });
+
+    $(document).ready(function () {
+      $('input:radio[name=colorpick]').change(function () {
+        if (this.value == 'silber') {
+          $('#farbeausgabe').text("Pearl White Multi-Coat");
+          $('#farbepreis').text("inklusive");
+          preisfarbe = 0;
+          updatepreis();
+          bestellfarbe = 0;
+        }
+        else if (this.value == 'schwarz') {
+          $('#farbeausgabe').text("Solid Black");
+          $('#farbepreis').text("1.600 €");
+          preisfarbe = 1600;
+          updatepreis();
+          bestellfarbe = 1;
+        }
+        else if (this.value == 'grau') {
+          $('#farbeausgabe').text("Midnight Silver Metallic");
+          $('#farbepreis').text("1.600 €");
+          preisfarbe = 1600;
+          updatepreis();
+          bestellfarbe = 2;
+        }
+        else if (this.value == 'blau') {
+          $('#farbeausgabe').text("Deep Blue Metallic");
+          $('#farbepreis').text("1.600 €");
+          preisfarbe = 1600;
+          updatepreis();
+          bestellfarbe = 3;
+        }
+        else if (this.value == 'rot') {
+          $('#farbeausgabe').text("Red Multi-Coat");
+          $('#farbepreis').text("2.900 €");
+          preisfarbe = 2900;
+          updatepreis();
+          bestellfarbe = 4;
+        }
+      });
+    });
+
+    $(document).ready(function(){
+    $('.autopilotcheck').click(function() {
+        $('.autopilotcheck').not(this).prop('checked', false);
+            var radioValue = $("input[name='autopilotcheck']:checked").val();
+            if(radioValue == 1){
+                preispilot = 7500;
+            }else{
+			preispilot = 0;
+			}
+            updatepreis();
+        });
+    });
+
+$(document).ready(function(){
+    $('.innenfarbecheck').click(function() {
+        $('.innenfarbecheck').not(this).prop('checked', false);
+        var radioValue = $("input[name='innenfarbecheck']:checked").val();
+            if(radioValue == 1){
+                preisinnenfarbe = 1600;
+            }else{
+			    preisinnenfarbe = 0;
+			}
+            updatepreis();
+    });
+
+});
+
+$(document).ready(function(){
+    $('#kaufen').click(function() {
+      $('#kaufmodellinfo').text(kaufmodell);
+      $('#kaufpreisinfo').text(gesamtpreis.toLocaleString() + " €");
+    });
+
+});
+
+$(document).ready(function(){
+    $('#kaufen').click(function() {
+      
+      bestellautopilot = $('input[name="autopilotcheck"]:checked').val();
+      bestellinnen = $('input[name="innenfarbecheck"]:checked').val();
+      orderjsongen = modellid + '' + artid + '' +  bestellfarbe + '' +  bestellinnen + '' +  bestellautopilot;
+      $('input[name="orderjson"]').val(orderjsongen);
+	  $('input[name="orderjsonpreis"]').val(gesamtpreis);	
+		
+    });
+
+});
+  </script>
+
+</body>
+
+</html>
