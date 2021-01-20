@@ -397,23 +397,23 @@ def produktionsdurchlauf():
                 bestellung_id = None 
                 for i in range(len(best_id_ls)):
                     #check availability of needed components
-                    query_typ_check = f"SELECT KompID FROM Komponente WHERE Auto_ID IS NULL AND Typ = 'Typ' AND Ausfuehrung = '{best_typ_ls[i]}' ORDER BY Eingang"
+                    query_typ_check = f"SELECT KompID FROM Komponente WHERE Auto_ID IS NULL AND Typ = 'Typ' AND Ausfuehrung = '{best_typ_ls[i]}' ORDER BY Eingang DESC"
                     typ_id = connection.execute(query_typ_check).fetchall()
                     if typ_id:
                         komp_ls.append(typ_id[0][0])
-                        query_batt_check = f"SELECT KompID FROM Komponente WHERE Auto_ID IS NULL AND Typ = 'Batterie' AND Ausfuehrung = '{best_bat_ls[i]}' ORDER BY Eingang"
+                        query_batt_check = f"SELECT KompID FROM Komponente WHERE Auto_ID IS NULL AND Typ = 'Batterie' AND Ausfuehrung = '{best_bat_ls[i]}' ORDER BY Eingang DESC"
                         batt_id = connection.execute(query_batt_check).fetchall()
                         if batt_id:
                             komp_ls.append(batt_id[0][0])
-                            query_inn_check = f"SELECT KompID FROM Komponente WHERE Auto_ID IS NULL AND Typ = 'Innenraum' AND Ausfuehrung = '{best_inn_ls[i]}' ORDER BY Eingang"
+                            query_inn_check = f"SELECT KompID FROM Komponente WHERE Auto_ID IS NULL AND Typ = 'Innenraum' AND Ausfuehrung = '{best_inn_ls[i]}' ORDER BY Eingang DESC"
                             inn_id = connection.execute(query_inn_check).fetchall()
                             if inn_id:
                                 komp_ls.append(inn_id[0][0])
-                                query_farbe_check = f"SELECT KompID FROM Komponente WHERE Auto_ID IS NULL AND Typ = 'Farbe' AND Ausfuehrung = '{best_farbe_ls[i]}' ORDER BY Eingang"
+                                query_farbe_check = f"SELECT KompID FROM Komponente WHERE Auto_ID IS NULL AND Typ = 'Farbe' AND Ausfuehrung = '{best_farbe_ls[i]}' ORDER BY Eingang DESC"
                                 farbe_id = connection.execute(query_farbe_check).fetchall()
                                 if farbe_id:
                                     komp_ls.append(farbe_id[0][0])
-                                    query_autoFahren_check = f"SELECT KompID FROM Komponente WHERE Auto_ID IS NULL AND Typ = 'AutoFahren' AND Ausfuehrung = '{best_autoFahren_ls[i]}' ORDER BY Eingang"
+                                    query_autoFahren_check = f"SELECT KompID FROM Komponente WHERE Auto_ID IS NULL AND Typ = 'AutoFahren' AND Ausfuehrung = '{best_autoFahren_ls[i]}' ORDER BY Eingang DESC"
                                     autoFahren_id = connection.execute(query_autoFahren_check).fetchall()
                                     if autoFahren_id:
                                         komp_ls.append(autoFahren_id[0][0])
@@ -463,7 +463,7 @@ def produktionsdurchlauf():
                         simuliere_lagereingang(15)                     
             else:
                 print("-------------Simuliere Bestellung")
-                bestellungen = random.choice([0,0,0,1])
+                bestellungen = random.choice([0,0,1])
                 print(bestellungen)
                 simuliere_bestellung(bestellungen) #Bestelle zufällig wahrsch. 25%
 
@@ -500,7 +500,7 @@ def produktionsdurchlauf():
         lb_fert = connection.execute(query_lb_fert).fetchall()[0][0]
         lagerbestand_ges = int(lb_unf) + int(lb_rst) + int(lb_fert)
 
-        if lb_fert > 30: #HC Bestellungen versenden ab 30 bestellungen
+        if lb_fert > 10: #HC Bestellungen versenden ab 15 bestellungen
             print(f"-------------Versandt Bestellungen (Fert Erzeugnisse: {lb_fert})")
             query_getLager = f"SELECT Auto_ID FROM Lager_Auto"
             lager = connection.execute(query_getLager).fetchall()
