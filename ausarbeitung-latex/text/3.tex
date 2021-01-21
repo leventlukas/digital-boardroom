@@ -1,17 +1,18 @@
 \chapter{Überführung der Konzepte - Case Study \enquote{Tesla-Produktion}}
 Ziel dieser Arbeit ist es, die Konzepte Operational und Real-Time \ac{BI} anhand eines vereinfachten Beispiels zu veranschaulichen und Vor- und Nachteile abzuleiten. Hierzu wird eine hypothetische Case Study durchgeführt, in der eine Produktionsfirma simuliert wird. Aus den breiten Anwendungsmöglichkeiten der Konzepte wird sich für einen Produktionsbeispiel aufgrund der Annahme entschieden, dass dieses Beispiel für eine breite Menge an Personen leicht verständlich ist.
 \section{Technische Umsetzung}
-Kapitelbegründung --> Besondere Herausforderung Daten simulieren
+Um die Kontrolle über die Beispieldaten zu erhöhen und damit die Nachvollziehbarkeit der Konzepte in der Praxis zu erhöhen, wurde davon abgesehen, eine bereits existierende \ac{DB} zu verwenden. Insbesodere die Aktualität der Daten im Sinne von Real-Time \ac{BI} macht eine solche Kontrolle erforderlich.
+Aus diesem Grund wurde eine vollständige Konzeption der benötigten Informationen und Implementierung der Produktionslogik durchgeführt. Um das Verstädnis für die Ergebnisse dieser Arbeit zu erhöhen, werden die wichtigsten Aspekte der Technischen Umsetzung nachfolgend erläutert.
 \subsection{Konzeptionierung}
 Ziel der Case Study ist es, die Vor- und Nachteile der gegebenen Konzepte zu verdeutlichen.
 Um dies zu erreichen, wurde sich für die Simulation eines Produktionsprozesses - konkret Produktion von Tesla-Autos - entschieden.
-\begin{figure}[H]
+\begin{figure}[]
     \centering
     \includegraphics[width=\textwidth]{ausarbeitung-latex/img/Prozessmodell.png}
     \caption{Strategisches Prozessmodell}
     \label{fig:bpmn}
 \end{figure}
-Am Strategischen Prozessmodell (Abb. \ref{fig:bpmn}) wird der gewählte (reduzierte) Prozess für die Simulation deutlich. Nach dem Bestelleingang, wird die Bestellung geprüft, geplant und läuft anschließend durch den eigentlichen Produktionsprozess. Jedes Auto muss in der Produktion vier Stufen durchlaufen, wobei jede Stufe von einer Maschine durchgeführt wird:
+\\Am Strategischen Prozessmodell (Abb. \ref{fig:bpmn}) wird der gewählte (reduzierte) Prozess für die Simulation deutlich. Nach dem Bestelleingang, wird die Bestellung geprüft, geplant und läuft anschließend durch den eigentlichen Produktionsprozess. Jedes Auto muss in der Produktion vier Stufen durchlaufen, wobei jede Stufe von einer Maschine durchgeführt wird:
 \begin{enumerate}
     \item Karosserie: Hier wird das Grundgerüst des Autos aufgebaut. Es kann zwischen Model S, Model 3 und Model X gewählt werden.
     \item Farbe: In dieser Station wird das Auto entsprechend lackiert. Es kann zwischen Pearl White Multi-Coat, Solid Black, Midnight Silver Metallic, Deep Blue Metallic und Red Multi-Coat gewählt werden
@@ -58,13 +59,13 @@ Eine Übersicht der verschiedenen Status einer Auto-Instanz findet sich in Tabel
     \caption{Status und Wert Auto Instanz}
     \label{tab:status}
 \end{table}
-Neben den Information, die notwendig sind, um den Bestellverarbeitungs- und Produktionsprozess abbilden zu können, werden weitere Informationen in der \ac{DB} gespeichert. Diese dienen stellen Kennzahlen dar oder dienen der Berechnung dieser Kennzahlen im Sinne von Operational und Real-Time \ac{BI}. Näheres zu den Kennzahlen findet sich in den Abschnitten \ref{abs:anwOP} und \ref{abs:anwRT}.
+Neben den Information, die notwendig sind, um den Bestellverarbeitungs- und Produktionsprozess abbilden zu können, werden weitere Informationen in der \ac{DB} gespeichert. Diese stellen Kennzahlen dar oder dienen der Berechnung dieser Kennzahlen im Sinne von Operational und Real-Time \ac{BI}. Näheres zu den Kennzahlen findet sich in den Abschnitten \label{abs:Kenn} und \ref{abs:anwOP}.
 
-\subsection{Produktions-Simulation und Kennzahlenberechung}
+\subsection{Produktions-Simulation und Kennzahlenberechung} \label{abs:Kenn}
  Um Berichterstattung im Sinne von \ac{BI} zu ermöglichen wurde ein Simulationsskript geschaffen, das den Zustand der \ac{DB} in einem regelmäßigen Abstand erneuert\footnote{Der Gesamte Code ist unter \url{https://github.com/leventlukas/digital-boardroom.git} aufrufbar.}. Dadurch wird der Produktionsprozess widergespiegelt. Zusätzlich wurden mehrere Web-UIs geschaffen, die eine direkte Manipulation der \ac{DB} ermöglichen. Konkret kann hierüber eine Bestellung getätigt, der Lagerbestand an Rohstoffen erhöht und Einfluss auf den Maschinen-Status genommen werden. Im Folgenden wird auf für den weiteren Verlauf dieser Arbeit relevante Zeilen eingegangen:
 
-\textbf{Nutzungsgrad}: Der Nutzungsgrad ist definiert als der Quotient der Produktiven Zeit durch die Gesamte Arbeitszeit. In jeder Iteration des Simulationsskriptes wird bestimmt, ob eine Maschine in der Zeit zur letzten Iteration gearbeitet hat. Hierfür wird geprüft, ob aktuell ein Auto in der Maschine ist. Wenn dies der Fall ist, wird Nutzung auf True gesetzt (Z. 212, 213), andernfalls
- auf False (Z. 337). Die Nutzung wird zum aktuellen Zeitpunkt mit der Dauer in Auslastung\_Maschine gespeichert. Zusätzlich wird der Leistungsgrad über die letzten zehn Einträge gespeichert. Konkret wird der Quotient der Summe aller Einträge für Dauer, mit Nutzung True, und der Summe aller Einträge für Dauer gesamt berechnet und eingetragen (Z. 321-333, 343, 433-438). Damit stellt Spalte Auslastung der Tabelle Auslastung\_Maschine den gleitenden Durchschnitt des Nutzungsgrades im zeitlichen Verlauf je Maschine dar.
+\textbf{Leistungsgrad}: Der Leistungsgrad ist definiert als der Quotient der Produktiven Zeit durch die Gesamte Arbeitszeit. In jeder Iteration des Simulationsskriptes wird bestimmt, ob eine Maschine in der Zeit zur letzten Iteration gearbeitet hat. Hierfür wird geprüft, ob aktuell ein Auto in der Maschine ist. Wenn dies der Fall ist, wird Nutzung auf True gesetzt (Z. 212, 213), andernfalls
+ auf False (Z. 337). Die Nutzung wird zum aktuellen Zeitpunkt mit der Dauer in Auslastung\_Maschine gespeichert. Zusätzlich wird der Leistungsgrad über die letzten zehn Einträge gespeichert. Konkret wird der Quotient der Summe aller Einträge für Dauer, mit Nutzung True, und der Summe aller Einträge für Dauer gesamt berechnet und eingetragen (Z. 321-333, 343, 433-438). Damit stellt Spalte Auslastung der Tabelle Auslastung\_Maschine den gleitenden Durchschnitt des Leistungsgrades im zeitlichen Verlauf je Maschine dar.
  \begin{equation}\label{equ:nutz}
     Leistungsgrad_t = \frac{\sum_{i=t-10}^{t-1} Nutzungsdauer_i}{\sum_{i=t-10}^{t-1} Laufzeit_i}
 \end{equation}
@@ -88,7 +89,7 @@ caption=Margenberechnung (SQL)
 ]{sql_marge.m} \label{code:MSQL}
 
 \subsection{Architekturübersicht}
-Die Übertragung der Konzepte Realtime-\ac{BI} und Operational-\ac{BI} in die vorgestellte Case Study lebt von drei Komponenten: 
+Die Übertragung der Konzepte Realtime-\ac{BI} und Operational-\ac{BI} in die vorgestellte Case Study lebt von dem Zusammenspiel der folgenden Komponenten: 
 \begin{enumerate}
     \item Das Simulationsskript dient dazu, in regelmäßigen Abständen den Zustand der \ac{DB} zu aktualisieren. Es werden ersterne Veränderungen in der Datenbank berücksichtigt und in einen konsistenten Zustand überführt. Hierbei wird auf den vorherigen Zustand zugegriffen und die Veränderung auf Basis der verstrichenen Zeit abgeleitet und zurück in die \ac{DB} geschrieben.
     \item Über Konfigurator und Simulator kann direkter Einfluss auf die \ac{DB} genommen werden: Es können Bestellungen getätigt, Maschinenproduktivität beeinflusst und der Lagerbestand zum aktuellen Marktpreis der Komponenten erhöht werden.
@@ -100,11 +101,49 @@ Die Übertragung der Konzepte Realtime-\ac{BI} und Operational-\ac{BI} in die vo
     \caption{Architektur}
     \label{fig:arch}
 \end{figure}
-Technisch wurde sich bei der Simulationskomponente für eine Microservice-Architektur, die auf einem lokalen Kubernetes-Cluster läuft. Es gibt zwei Deployments, entschieden: Das \textit{digitalboardroom-server} deployment startet den Simulations-Server, der das Simulationsskript als Service bereitstellt. Diese Ressource ist repliziert und wird über einen NodePort-Service verfügbar gemacht. Der Service fungiert zusätzlich als LoadBalancer. Dieser Service wird vom \textit{digitalboardroom-loopclient} im gleichnamigen Deployment in einer Schleife alle 5 Sekunden konsumiert. Zusätzlich besteht die Möglichkeit den Service außerhalb des Clusters lokal zu adressieren. Alle Pods basieren auf dem gleichen Dockerimage, besitzen jedoch unterschiedliche Entrypoints. Image-Versionen werden über Dockerhub verwaltet.
-\\Die Server-Replikas haben direkten Zugriff auf die \ac{DB} und sorgen für einen konsistenten Zustand.
-Die \ac{DB}, sowie die Web-UI's werden über noez.de gehostet. Die gesamte Architektur findet sich in Abb. \ref{fig:arch}.
-\textbf{UI-Tools und Warum}
+Technisch wurde sich bei der Simulationskomponente für eine Microservice-Architektur, die auf einem lokalen Kubernetes-Cluster läuft. Es gibt zwei Deployments, entschieden: Das \textit{digitalboardroom-server} deployment startet den Simulations-Server, der das Simulationsskript als Service bereitstellt. Diese Ressource ist repliziert und wird über einen NodePort-Service verfügbar gemacht. Der Service fungiert zusätzlich als LoadBalancer. Dieser Service wird vom \textit{digitalboardroom-loopclient} im gleichnamigen Deployment in einer Schleife alle 3 Sekunden konsumiert. Zusätzlich besteht die Möglichkeit den Service außerhalb des Clusters lokal zu adressieren. Alle Pods basieren auf dem gleichen Dockerimage, besitzen jedoch unterschiedliche Entrypoints. Image-Versionen werden über Dockerhub verwaltet. Die Server-Replikas haben direkten Zugriff auf die \ac{DB}.
+Die \ac{DB}, sowie die Web-UI's werden über noez.de gehostet. Die gesamte Architektur findet sich in Abb. \ref{fig:arch}. Die beiden Web-UI's zur direkten Manipulation sind über php und bootstrap umgesetzt. Für die Dashboards wurde zusätzliche vue.js \footnote{\url{https://vuejs.org}} und Google Developers Charts \footnote{\url{https://developers.google.com/chart}} verwndet. Die gesamte Architektur ist in Abb. \ref{fig:arch} dargestellt.
 
-\section{Anwendung Operational BI & Realtime BI} \label{abs:anwOP}
+Für die verwendeten Tools wurde sich in dieser Ausarbeitung entschieden, da sie die für Real-Time \ac{BI} nötigen Funktionen im vollen Umfang kostenfrei zur Verfügung stellen. Insbesondere sind hiermit Datensynchronisation und Kollaboration gemeint. Andere Tools wie bspw. PowerBI bieten diesen Funktionsumfang ausschließlich in der kostenpflichtingen, professionellen Version.
+
+\section{Anwendung Operational BI \& Realtime BI} \label{abs:anwOP}
+Die Anwendung der Konzepte lässt sich in zwei Breiche unterscheiden:
+\begin{itemize}
+    \item \textbf{Dashboard Bestellungen} (Abb. \ref{fig:DashBest}): Hierbei handelt es sich um eine echtzeit Übersicht der Bestellungen und verbundenen Kennzahlen. Damit stellt dieses Dashboard eine betriebswirtschaftliche Perspektive auf den aktuellen und zukünftigen Produktionsstatus dar. Damit können beispielsweise Einkaufs- und Preisbildungsentscheidungen getroffen werden.
+    \item \textbf{Dashboard Produktion} (Abb. \ref{fig:DashProd}): Hierbei handelt es sich um eine operative Sicht auf die Produktion. Es wird der aktuelle Status der Produktionshalle dargestellt, um operative Entscheidungen in Hinblick auf Maschinen und Produktion abzuleiten.
+\end{itemize}
+Im Folgenden werden die Elemente der Dashboards erläutert und Implikationen für operative Enscheidungen abgeleitet.
+\subsubsection*{Dashboard Bestellung}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{ausarbeitung-latex/img/DashboardBestellung.png}
+    \caption{Dashboard Bestellung}
+    \label{fig:DashBest}
+\end{figure}
+\begin{enumerate}
+    \item Aktuelle Lieferzeit: Die aktuelle Lieferzeit ist definiert als die Differenz der Zeitpunkte Bestellungseingang und Versand der Bestellungen. Da das Lager ab zehn fertigen Produkten geleert und die Produkte versendet werden, werden hier die letzten zehn Bestellungen betrachtet. Sinkende Kundenzufriedenheit kann Folge einer erhöhten Lieferzeit sein. Gründe können unzureichender Lagerbestand oder Probleme in der Porduktion sein. Diese können anhand der Graphiken drei und vier abgeleitet werden.
+    \item Letzten 10 Bestellungen: Die letzten zehn Bestellungen geben Auskunft über die Entwicklung der Kundenbedürfnisse. Es können entscheidungen für den Einkauf abgeleitet werden.
+    \item Statusübersicht: Diese Pipeline gibt eine Übersicht darüber, in welchem Schritt, sich die Bestellungen aktuell befinden. Fehlt es bspw. an den richtigen Komponenten, um die aktuellen Kundenbedürfnisse zu befriedigen, erhöht sich der Anteil der ungeplanten Bestellungen; Kommt es dagegen zu Problemen in der Produktion, erhöht sich der Anteil an geplanten Bestellungen oder in Produktion.
+    \item Lagerübersicht: Die Lagerübersicht gibt Aufschluss über den Anteil und den durchschnittlichen Preis der Komponenten im Lager. Damit können Entscheidungen für den Einkauf getroffen werden. Wenn sich der Lagerbestand zu sehr verringert, steigt die Wahrscheinlichkeit, dass die Konfiguration bestimmter Bestellungen nicht befriedigt werden kann; Gleichzeitig stellen die durchschnittlichen Preise eine Referenz für den Einkauf dar, was insbesondere durch die Margenübersicht an Relevanz gewinnt.
+    \item Margenübersicht: Die Margenübersicht setzt die Kosten in das Verhältnis zu den Umsätzen der Bestellungen, die sich in der Produktionspipeline befinden (Gl. 3.4). Da hier weitere Kosten hinzukommen, ist der inakzeptable Bereich recht hoch. Die Margen unterscheiden sich für jeden Typ und jede Konfiguration. Sinken die Verkaufspreise oder steigen die Einkaufspreise der Komponenten, wird dies direkt in der Margenübersicht deutlich und es können entsprechende Maßnahmen getroffen werden.
+    \item Anzahl Bestellungen der letzten Stunde: Die Anzahl der Bestellungen zeigt deutlich Anomalien im Verhalten der Kunden. Drastische Ausschläge in die eine oder andere Richtung, können - je nach Richtung des Ausschlags - zu Lieferunfähigkeit oder fehlenden Deckungsbeiträgen führen.
+    \item Umsatz/Bestellungen: Zuletzt bietet diese Übersicht eine Einordnung des Umsatzes und der Anzahl der Bestellungen im Verhältnis zu den letzten fünf Tagen. Eine systematische Veränderung dieser Zahlen können Maßnahmen erforderlich machen (z.B. Werbekampagne schalten/erhöhen).
+\end{enumerate}
+
+\subsubsection*{Dashboard Produktion}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{ausarbeitung-latex/img/DashboardProduktion.png}
+    \caption{Dashboard Produktion}
+    \label{fig:DashProd}
+\end{figure}
+\begin{enumerate}
+    \item Aktuelle Durchlaufzeit: Die aktuelle Durchlaufzeit ist eine der wichtigsten Kennzahlen der Produktion und dient als initialer Indikator, für Probleme in der Produktion. Nähere Informationen über die Gründe einer Erhöhung wird in den anderen Elementen des Dashboards deutlich.
+    \item Produktionsübersicht: Die Produktionsübersicht gibt an, wie viele Autos sich in welcher produktionsbezogenen Station (Tab. \ref{tab:status} befinden. Da die Produktion an einem One-Piece-Flow orientiert ist, ist die Erwartung, dass sich in jeder Station ein Auto befindet. Verringert sich die Produktivität einer Maschine, drückt sich dies in einem Stau an der vorherigen Station aus.
+    \item Lagerübersicht: Die Lagerübersicht unterscheidet in Rohstoffe, fertige und unfertige Erzeugnisse. Eine Erhöhung der Durchlaufzeit hat eine Erhöhung des Lagerbestandes an unfertigen Erzeugnissen zur Folge, was negative bilanzielle Implikationen hat.
+    \item Maschinenauslastung: Die Maschinenauslastung entspricht dem Verlauf des Leistungsgrades (Gl. 3.1). Die Abnahme der Maschinenauslastung ist auf eine verringerte Produktivität der Vormaschine zurückzuführen. Diese Maschine weist dann einen gestiegenen Leistungsgrad auf, da sich durch die erhöhte Bearbeitungszeit, ein Produktstau an der Station vor dieser Station bildet. Dies wird ebenfalls in der Produktionsübersicht deutlich.
+    \item Maschinenproduktivität: Die Produktivität gibt Aufschluss auf die tatsächliche Bearbeitungszeit (Gl. 3.2) und kann somit als Erklärung der anderen Kennzahlen herangezogen werden.
+    \item Maschinenstatusverlauf: Zuletzt bietet der Statusverlauf sofortige Auskunft über den Zustand einer Maschine und dient ebenfalls der Erlärung anderer Kennzahlen. Zusammen mit den bereits vorgestellten Kennzahlen können Entscheidungen über Wartung und Konfiguration einzelner Maschinen bzw. der Produktions getroffen werden.
+\end{enumerate}
 \section{Ergebnisse}
 \textbf{verwendete Tools nicht praxisnahe --> andere Tool sind jedoch teuer deutlich teurer und komplexer}
