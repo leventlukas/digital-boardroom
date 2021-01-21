@@ -500,7 +500,7 @@ def produktionsdurchlauf():
         lb_fert = connection.execute(query_lb_fert).fetchall()[0][0]
         lagerbestand_ges = int(lb_unf) + int(lb_rst) + int(lb_fert)
 
-        if lb_fert > 10: #HC Bestellungen versenden ab 15 bestellungen
+        if lb_fert >= 10: #HC Bestellungen versenden ab 15 bestellungen
             print(f"-------------Versandt Bestellungen (Fert Erzeugnisse: {lb_fert})")
             query_getLager = f"SELECT Auto_ID FROM Lager_Auto"
             lager = connection.execute(query_getLager).fetchall()
