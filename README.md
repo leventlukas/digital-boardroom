@@ -4,7 +4,7 @@ Bei diesem Repository handelt es sich um ein Hochschule Projekt an der ESB Reutl
 ).
 
 
-Ziel des Projektes ist die Veranschaulichtung von Operational BI und Realtime BI. 
+Ziel des Projektes ist die [Veranschaulichtung von Operational BI und Realtime BI](https://youtu.be/xnNvUQCp5Rk). 
 
 Das Repository ist folgendermaßen aufgebaut:
 
