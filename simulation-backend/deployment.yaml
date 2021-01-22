@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: digital-boardroom-server
-        image: leventlukas/digital-boardroom:latest
+        image: leventlukas/digital-boardroom:final
         command: ["python", "server.py"]
         ports:
         - name: http
@@ -67,5 +67,5 @@ spec:
     spec:
       containers:
       - name: digital-boardroom-loopclient
-        image: leventlukas/digital-boardroom:latest
-        command: ["python", "execute.py", '5']
+        image: leventlukas/digital-boardroom:final
+        command: ["python", "execute.py", '3']
